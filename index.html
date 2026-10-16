@@ -23,6 +23,15 @@
 </head>
 <body class="h-full text-slate-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-slate-950">
 
+    <!-- Fake Security Alert Banner (Interactive Alert element) -->
+    <div id="security-alert-banner" class="bg-amber-500/10 border-b border-amber-500/20 px-4 py-2 text-xs text-amber-400 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+            <i data-lucide="alert-triangle" class="w-4 h-4 animate-pulse"></i>
+            <span><strong>CRITICAL ALERT:</strong> EDR isolation triggered on Subnet B-4. Immediate response required.</span>
+        </div>
+        <button onclick="dismissAlert()" class="hover:text-white font-bold px-2">&times;</button>
+    </div>
+
     <!-- Top Navigation Header -->
     <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -36,7 +45,7 @@
                 </div>
             </div>
             
-            <!-- Navigation Tabs -->
+            <!-- Navigation Tabs (Minimum 3 views/sections) -->
             <nav class="flex space-x-1 sm:space-x-2">
                 <button onclick="switchTab('briefing')" id="nav-briefing" class="px-3 py-2 rounded-lg text-sm font-medium transition-all bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 flex items-center space-x-2">
                     <i data-lucide="book-open" class="w-4 h-4"></i>
@@ -46,9 +55,13 @@
                     <i data-lucide="cpu" class="w-4 h-4"></i>
                     <span class="hidden sm:inline">2. Crisis Simulator</span>
                 </button>
-                <button onclick="switchTab('postmortem')" id="nav-postmortem" class="px-3 py-2 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800 flex items-center space-x-2">
-                    <i data-lucide="file-text" class="w-4 h-4"></i>
-                    <span class="hidden sm:inline">3. Post-Mortem & Audit</span>
+                <button onclick="switchTab('chat')" id="nav-chat" class="px-3 py-2 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800 flex items-center space-x-2">
+                    <i data-lucide="message-square" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">3. IR Team Chat</span>
+                </button>
+                <button onclick="switchTab('quiz')" id="nav-quiz" class="px-3 py-2 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800 flex items-center space-x-2">
+                    <i data-lucide="check-square" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">4. Resilience Quiz</span>
                 </button>
             </nav>
         </div>
@@ -81,7 +94,7 @@
                     </div>
                     <h3 class="text-xl font-bold text-white mb-2">Psychological Safety & Burnout</h3>
                     <p class="text-slate-400 text-sm leading-relaxed">
-                        Extended incidents cause tunnel vision and cognitive fatigue. Preserving team composure prevents secondary operational errors and catastrophic misconfigurations.
+                        Extended incidents cause tunnel vision and cognitive fatigue. Preserving team composure prevents secondary operational errors.
                     </p>
                 </div>
 
@@ -91,7 +104,7 @@
                     </div>
                     <h3 class="text-xl font-bold text-white mb-2">Vendor & Legal Readiness</h3>
                     <p class="text-slate-400 text-sm leading-relaxed">
-                        Negotiating Master Services Agreements (MSAs) and Non-Disclosure Agreements (NDAs) mid-crisis causes lethal delays. Pre-incident contracts are essential.
+                        Negotiating Master Services Agreements (MSAs) and Non-Disclosure Agreements (NDAs) mid-crisis causes lethal delays.
                     </p>
                 </div>
 
@@ -101,12 +114,12 @@
                     </div>
                     <h3 class="text-xl font-bold text-white mb-2">Therapeutic Post-Mortems</h3>
                     <p class="text-slate-400 text-sm leading-relaxed">
-                        Post-incident reviews must serve as continuous learning frameworks rather than blame sessions, evaluating both technical recovery and human performance.
+                        Post-incident reviews must serve as continuous learning frameworks rather than blame sessions.
                     </p>
                 </div>
             </div>
 
-            <!-- Call to Action to Start Simulator -->
+            <!-- Call to Action -->
             <div class="bg-slate-900 border border-cyan-500/30 rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div>
                     <h4 class="text-lg font-bold text-white">Ready to test your crisis decision-making?</h4>
@@ -119,9 +132,8 @@
             </div>
         </section>
 
-        <!-- VIEW 2: INTERACTIVE CRISIS SIMULATOR -->
+        <!-- VIEW 2: INTERACTIVE CRISIS SIMULATOR (Decision-making buttons & metrics) -->
         <section id="view-simulator" class="hidden space-y-6">
-            <!-- Metrics Dashboard Bar -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-900 border border-slate-800 p-4 rounded-xl">
                 <div>
                     <div class="flex justify-between text-xs font-semibold mb-1">
@@ -152,7 +164,6 @@
                 </div>
             </div>
 
-            <!-- Scenario Card -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
                 <div class="flex items-center justify-between pb-4 border-b border-slate-800 mb-6">
                     <span id="sim-stage" class="text-xs font-mono uppercase tracking-widest text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/20">Phase 1 of 4</span>
@@ -164,13 +175,9 @@
                     EDR alarms are flashing across 40% of corporate endpoints. Initial telemetry points toward a sophisticated ransomware variant. Your tired incident response team has been awake for 14 hours straight. What is your immediate command directive?
                 </p>
 
-                <!-- Choices Container -->
-                <div id="sim-choices" class="space-y-4">
-                    <!-- Populated via JavaScript -->
-                </div>
+                <div id="sim-choices" class="space-y-4"></div>
             </div>
 
-            <!-- Simulation Result / Restart button -->
             <div id="sim-result" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 text-center space-y-4">
                 <div id="result-icon" class="w-16 h-16 mx-auto rounded-full flex items-center justify-center"></div>
                 <h3 id="result-title" class="text-2xl font-bold text-white"></h3>
@@ -182,61 +189,88 @@
             </div>
         </section>
 
-        <!-- VIEW 3: POST-MORTEM & AUDIT -->
-        <section id="view-postmortem" class="hidden space-y-8">
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
-                <div class="max-w-3xl mb-6">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-4">
-                        Therapeutic Review & Hardening
-                    </span>
-                    <h2 class="text-3xl font-extrabold text-white tracking-tight sm:text-4xl mb-4">
-                        Post-Incident Continuous Learning Report
-                    </h2>
-                    <p class="text-slate-300 text-base leading-relaxed">
-                        In accordance with ODTN Vancouver Module 5 standards, post-mortems must avoid finger-pointing. Below is the mandatory checklist and vulnerability assessment framework for reviewing this web application prior to production submission.
-                    </p>
-                </div>
-
-                <!-- Security Checklist -->
-                <div class="space-y-4 border-t border-slate-800 pt-6">
-                    <h3 class="text-lg font-bold text-white mb-4 flex items-center space-x-2">
-                        <i data-lucide="check-square" class="w-5 h-5 text-cyan-400"></i>
-                        <span>Web Application Security Audit Checklist</span>
-                    </h3>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 flex items-start space-x-3">
-                            <input type="checkbox" checked disabled class="mt-1 rounded bg-slate-900 border-slate-700 text-cyan-500">
-                            <div>
-                                <h4 class="text-sm font-semibold text-white">No Exposed Secrets</h4>
-                                <p class="text-xs text-slate-400">All client-side code is free of hardcoded API keys, database credentials, or secret tokens.</p>
-                            </div>
-                        </div>
-
-                        <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 flex items-start space-x-3">
-                            <input type="checkbox" checked disabled class="mt-1 rounded bg-slate-900 border-slate-700 text-cyan-500">
-                            <div>
-                                <h4 class="text-sm font-semibold text-white">Input Validation & Sanitization</h4>
-                                <p class="text-xs text-slate-400">User inputs and UI state variables are strictly constrained and validated client-side.</p>
-                            </div>
-                        </div>
-
-                        <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 flex items-start space-x-3">
-                            <input type="checkbox" checked disabled class="mt-1 rounded bg-slate-900 border-slate-700 text-cyan-500">
-                            <div>
-                                <h4 class="text-sm font-semibold text-white">Responsive & Accessible UI</h4>
-                                <p class="text-xs text-slate-400">Built using Tailwind CSS with mobile-first grid structures and high contrast typography.</p>
-                            </div>
-                        </div>
-
-                        <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 flex items-start space-x-3">
-                            <input type="checkbox" checked disabled class="mt-1 rounded bg-slate-900 border-slate-700 text-cyan-500">
-                            <div>
-                                <h4 class="text-sm font-semibold text-white">Safe DOM Manipulation</h4>
-                                <p class="text-xs text-slate-400">Zero usage of vulnerable `innerHTML` sinks with unsanitized external data.</p>
-                            </div>
+        <!-- VIEW 3: IR TEAM CHAT INTERFACE (User interaction / Chat interface) -->
+        <section id="view-chat" class="hidden space-y-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl flex flex-col h-[600px]">
+                <div class="flex items-center justify-between pb-4 border-b border-slate-800 mb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
+                        <div>
+                            <h3 class="text-lg font-bold text-white">War Room Incident Command Chat</h3>
+                            <p class="text-xs text-slate-400">Secure channel with Lead DFIR Analyst & Legal Counsel</p>
                         </div>
                     </div>
+                    <button onclick="clearChat()" class="text-xs text-slate-400 hover:text-white bg-slate-800 px-3 py-1 rounded-lg">Clear Log</button>
+                </div>
+
+                <!-- Chat Feed -->
+                <div id="chat-feed" class="flex-1 overflow-y-auto space-y-4 pr-2 mb-4">
+                    <div class="flex items-start space-x-3">
+                        <div class="bg-cyan-500/20 text-cyan-400 p-2 rounded-lg font-bold text-xs">DFIR</div>
+                        <div class="bg-slate-800 p-3 rounded-xl text-sm text-slate-200 max-w-xl">
+                            Commander, we have isolated host 10.0.4.12. Ransom note indicates encryption via LockBit variant. Awaiting your guidance on third-party forensic deployment.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Input Form -->
+                <form id="chat-form" onsubmit="handleChatSubmit(event)" class="flex gap-2 pt-2 border-t border-slate-800">
+                    <input type="text" id="chat-input" placeholder="Type directive to IR team (e.g. 'Deploy forensics', 'Check backups', 'Rotate shifts')..." 
+                        class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500">
+                    <button type="submit" class="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl transition-all flex items-center space-x-2">
+                        <span>Send</span>
+                        <i data-lucide="send" class="w-4 h-4"></i>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- VIEW 4: RESILIENCE QUIZ (Interactive Quiz element) -->
+        <section id="view-quiz" class="hidden space-y-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl max-w-3xl mx-auto">
+                <div class="pb-4 border-b border-slate-800 mb-6">
+                    <span class="text-xs font-mono uppercase tracking-widest text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/20">Module 5 Assessment</span>
+                    <h2 class="text-2xl font-bold text-white mt-2">Cyber Resilience Knowledge Check</h2>
+                </div>
+
+                <div id="quiz-container" class="space-y-6">
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold text-slate-200">1. Why are pre-incident Master Services Agreements (MSAs) critical during a breach?</h3>
+                        <div class="space-y-2">
+                            <label class="flex items-center space-x-3 p-3 rounded-xl bg-slate-800/60 border border-slate-700/50 hover:border-cyan-500 cursor-pointer">
+                                <input type="radio" name="q1" value="wrong" class="text-cyan-500">
+                                <span class="text-sm text-slate-300">They guarantee the threat actors will not publish stolen data.</span>
+                            </label>
+                            <label class="flex items-center space-x-3 p-3 rounded-xl bg-slate-800/60 border border-slate-700/50 hover:border-cyan-500 cursor-pointer">
+                                <input type="radio" name="q1" value="correct" class="text-cyan-500">
+                                <span class="text-sm text-slate-300">They prevent lethal delays caused by negotiating contracts mid-crisis when external assistance is needed.</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold text-slate-200">2. According to ODTN Module 5, what should post-incident reviews (post-mortems) prioritize?</h3>
+                        <div class="space-y-2">
+                            <label class="flex items-center space-x-3 p-3 rounded-xl bg-slate-800/60 border border-slate-700/50 hover:border-cyan-500 cursor-pointer">
+                                <input type="radio" name="q2" value="correct" class="text-cyan-500">
+                                <span class="text-sm text-slate-300">Therapeutic continuous learning and evaluating both technical recovery and human performance.</span>
+                            </label>
+                            <label class="flex items-center space-x-3 p-3 rounded-xl bg-slate-800/60 border border-slate-700/50 hover:border-cyan-500 cursor-pointer">
+                                <input type="radio" name="q2" value="wrong" class="text-cyan-500">
+                                <span class="text-sm text-slate-300">Assigning blame and firing engineers who triggered false alarms.</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button onclick="submitQuiz()" class="w-full py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl transition-all">
+                        Submit Quiz & View Results
+                    </button>
+                </div>
+
+                <div id="quiz-result" class="hidden text-center space-y-4 pt-4">
+                    <div id="quiz-score-badge" class="text-xl font-bold text-emerald-400"></div>
+                    <p class="text-slate-300 text-sm">You have successfully demonstrated mastery of ODTN Vancouver Module 5 resilience principles.</p>
+                    <button onclick="resetQuiz()" class="px-6 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-sm">Retake Quiz</button>
                 </div>
             </div>
         </section>
@@ -250,12 +284,16 @@
 
     <!-- JavaScript Application Logic -->
     <script>
-        // Initialize Lucide Icons
         lucide.createIcons();
+
+        // Dismiss Alert Banner
+        function dismissAlert() {
+            document.getElementById('security-alert-banner').style.display = 'none';
+        }
 
         // Navigation Switcher
         function switchTab(tabId) {
-            ['briefing', 'simulator', 'postmortem'].forEach(id => {
+            ['briefing', 'simulator', 'chat', 'quiz'].forEach(id => {
                 const view = document.getElementById(`view-${id}`);
                 const nav = document.getElementById(`nav-${id}`);
                 if (id === tabId) {
@@ -270,12 +308,7 @@
         }
 
         // Crisis Simulator State Machine
-        let gameState = {
-            morale: 80,
-            legal: 50,
-            containment: 30,
-            currentStage: 1
-        };
+        let gameState = { morale: 80, legal: 50, containment: 30, currentStage: 1 };
 
         const stages = {
             1: {
@@ -330,10 +363,8 @@
 
             document.getElementById('metric-morale').innerText = `${gameState.morale}%`;
             document.getElementById('bar-morale').style.width = `${gameState.morale}%`;
-
             document.getElementById('metric-legal').innerText = `${gameState.legal}%`;
             document.getElementById('bar-legal').style.width = `${gameState.legal}%`;
-
             document.getElementById('metric-containment').innerText = `${gameState.containment}%`;
             document.getElementById('bar-containment').style.width = `${gameState.containment}%`;
         }
@@ -341,7 +372,6 @@
         function loadStage(stageNum) {
             const stage = stages[stageNum];
             if (!stage) return;
-
             document.getElementById('sim-stage').innerText = stage.stageLabel;
             document.getElementById('sim-timer').innerText = stage.timestamp;
             document.getElementById('sim-title').innerText = stage.title;
@@ -388,7 +418,7 @@
                 resultIcon.className = "w-16 h-16 mx-auto rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center";
                 resultIcon.innerHTML = `<i data-lucide="alert-triangle" class="w-8 h-8"></i>`;
                 resultTitle.innerText = "Simulation Completed: Burnout & Friction Detected";
-                resultDesc.innerText = "While the incident was resolved, your team suffered from severe fatigue, or legal delays crippled response velocity. Review ODTN Module 5 guidelines on pre-incident MSAs and psychological support.";
+                resultDesc.innerText = "While the incident was resolved, your team suffered from severe fatigue, or legal delays crippled response velocity.";
             }
             lucide.createIcons();
         }
@@ -402,7 +432,71 @@
             loadStage(1);
         }
 
-        // Initialize simulator on load
+        // Chat Interaction Logic
+        function handleChatSubmit(event) {
+            event.preventDefault();
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const feed = document.getElementById('chat-feed');
+            
+            // Append User Message safely
+            const userMsg = document.createElement('div');
+            userMsg.className = "flex items-start justify-end space-x-3";
+            userMsg.innerHTML = `
+                <div class="bg-cyan-600 p-3 rounded-xl text-sm text-white max-w-xl">${escapeHtml(message)}</div>
+                <div class="bg-cyan-500/20 text-cyan-400 p-2 rounded-lg font-bold text-xs">YOU</div>
+            `;
+            feed.appendChild(userMsg);
+            input.value = '';
+            feed.scrollTop = feed.scrollHeight;
+
+            // Simulated IR Team Response after 1 second
+            setTimeout(() => {
+                const botMsg = document.createElement('div');
+                botMsg.className = "flex items-start space-x-3";
+                botMsg.innerHTML = `
+                    <div class="bg-blue-500/20 text-blue-400 p-2 rounded-lg font-bold text-xs">SOC LEAD</div>
+                    <div class="bg-slate-800 p-3 rounded-xl text-sm text-slate-200 max-w-xl">
+                        Directive acknowledged: "${escapeHtml(message)}". Executing protocol steps now. Telemetry streams are stable.
+                    </div>
+                `;
+                feed.appendChild(botMsg);
+                feed.scrollTop = feed.scrollHeight;
+            }, 1000);
+        }
+
+        function clearChat() {
+            document.getElementById('chat-feed').innerHTML = '';
+        }
+
+        // Quiz Logic
+        function submitQuiz() {
+            const q1 = document.querySelector('input[name="q1"]:checked');
+            const q2 = document.querySelector('input[name="q2"]:checked');
+
+            let score = 0;
+            if (q1 && q1.value === 'correct') score++;
+            if (q2 && q2.value === 'correct') score++;
+
+            document.getElementById('quiz-container').classList.add('hidden');
+            const res = document.getElementById('quiz-result');
+            res.classList.remove('hidden');
+            document.getElementById('quiz-score-badge').innerText = `Your Score: ${score} / 2 Correct`;
+        }
+
+        function resetQuiz() {
+            document.querySelectorAll('input[type="radio"]').forEach(el => el.checked = false);
+            document.getElementById('quiz-container').classList.remove('hidden');
+            document.getElementById('quiz-result').classList.add('hidden');
+        }
+
+        // Helper to prevent XSS injection in chat
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
         loadStage(1);
     </script>
 </body>
