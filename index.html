@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ODTN Vancouver Module 5: Cyber Resilience & Crisis Simulator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        slate: { 850: '#151f32', 950: '#0a0f1d' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="h-full text-slate-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-slate-950">
+
+    <!-- Top Navigation Header -->
+    <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-cyan-500/10 p-2 rounded-lg border border-cyan-500/20 text-cyan-400">
+                    <i data-lucide="shield-alert" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight">ODTN Vancouver | Module 5</h1>
+                    <p class="text-xs text-slate-400">Lessons That Redefine Cyber Resilience</p>
+                </div>
+            </div>
+            
+            <!-- Navigation Tabs -->
+            <nav class="flex space-x-1 sm:space-x-2">
+                <button onclick="switchTab('briefing')" id="nav-briefing" class="px-3 py-2 rounded-lg text-sm font-medium transition-all bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 flex items-center space-x-2">
+                    <i data-lucide="book-open" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">1. Briefing</span>
+                </button>
+                <button onclick="switchTab('simulator')" id="nav-simulator" class="px-3 py-2 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800 flex items-center space-x-2">
+                    <i data-lucide="cpu" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">2. Crisis Simulator</span>
+                </button>
+                <button onclick="switchTab('postmortem')" id="nav-postmortem" class="px-3 py-2 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800 flex items-center space-x-2">
+                    <i data-lucide="file-text" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">3. Post-Mortem & Audit</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 overflow-y-auto">
+
+        <!-- VIEW 1: BRIEFING & CONTEXT -->
+        <section id="view-briefing" class="space-y-8">
+            <div class="bg-gradient-to-r from-slate-900 to-slate-900/50 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
+                <div class="max-w-3xl">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 mb-4">
+                        Executive Scenario Briefing
+                    </span>
+                    <h2 class="text-3xl font-extrabold text-white tracking-tight sm:text-4xl mb-4">
+                        Human Dynamics in Cyber Crisis Management
+                    </h2>
+                    <p class="text-slate-300 text-lg leading-relaxed">
+                        Technical playbooks and firewalls are only half the battle. ODTN Vancouver Module 5 explores the intense psychological pressure leaders face during zero-day ransomware incidents under incomplete information.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Key Pillars Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-6 hover:border-cyan-500/50 transition-all">
+                    <div class="bg-blue-500/10 text-blue-400 p-3 rounded-lg w-fit mb-4 border border-blue-500/20">
+                        <i data-lucide="brain" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Psychological Safety & Burnout</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Extended incidents cause tunnel vision and cognitive fatigue. Preserving team composure prevents secondary operational errors and catastrophic misconfigurations.
+                    </p>
+                </div>
+
+                <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-6 hover:border-cyan-500/50 transition-all">
+                    <div class="bg-amber-500/10 text-amber-400 p-3 rounded-lg w-fit mb-4 border border-amber-500/20">
+                        <i data-lucide="scale" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Vendor & Legal Readiness</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Negotiating Master Services Agreements (MSAs) and Non-Disclosure Agreements (NDAs) mid-crisis causes lethal delays. Pre-incident contracts are essential.
+                    </p>
+                </div>
+
+                <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-6 hover:border-cyan-500/50 transition-all">
+                    <div class="bg-emerald-500/10 text-emerald-400 p-3 rounded-lg w-fit mb-4 border border-emerald-500/20">
+                        <i data-lucide="refresh-cw" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Therapeutic Post-Mortems</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Post-incident reviews must serve as continuous learning frameworks rather than blame sessions, evaluating both technical recovery and human performance.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Call to Action to Start Simulator -->
+            <div class="bg-slate-900 border border-cyan-500/30 rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                    <h4 class="text-lg font-bold text-white">Ready to test your crisis decision-making?</h4>
+                    <p class="text-sm text-slate-400">Step into the role of Incident Commander in an active ransomware breach.</p>
+                </div>
+                <button onclick="switchTab('simulator')" class="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl transition-all shadow-lg shadow-cyan-500/20 flex items-center space-x-2">
+                    <span>Launch Simulator</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- VIEW 2: INTERACTIVE CRISIS SIMULATOR -->
+        <section id="view-simulator" class="hidden space-y-6">
+            <!-- Metrics Dashboard Bar -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-900 border border-slate-800 p-4 rounded-xl">
+                <div>
+                    <div class="flex justify-between text-xs font-semibold mb-1">
+                        <span class="text-slate-400">Team Morale & Energy</span>
+                        <span id="metric-morale" class="text-cyan-400">80%</span>
+                    </div>
+                    <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                        <div id="bar-morale" class="bg-cyan-500 h-full transition-all duration-500" style="width: 80%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between text-xs font-semibold mb-1">
+                        <span class="text-slate-400">Legal & Vendor Preparedness</span>
+                        <span id="metric-legal" class="text-amber-400">50%</span>
+                    </div>
+                    <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                        <div id="bar-legal" class="bg-amber-500 h-full transition-all duration-500" style="width: 50%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between text-xs font-semibold mb-1">
+                        <span class="text-slate-400">Incident Containment</span>
+                        <span id="metric-containment" class="text-emerald-400">30%</span>
+                    </div>
+                    <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                        <div id="bar-containment" class="bg-emerald-500 h-full transition-all duration-500" style="width: 30%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scenario Card -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
+                <div class="flex items-center justify-between pb-4 border-b border-slate-800 mb-6">
+                    <span id="sim-stage" class="text-xs font-mono uppercase tracking-widest text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/20">Phase 1 of 4</span>
+                    <span id="sim-timer" class="text-xs text-slate-400 font-mono">Timestamp: 03:42 AM PST</span>
+                </div>
+
+                <h3 id="sim-title" class="text-2xl font-bold text-white mb-3">Zero-Day Outbreak Detected</h3>
+                <p id="sim-desc" class="text-slate-300 text-base leading-relaxed mb-8">
+                    EDR alarms are flashing across 40% of corporate endpoints. Initial telemetry points toward a sophisticated ransomware variant. Your tired incident response team has been awake for 14 hours straight. What is your immediate command directive?
+                </p>
+
+                <!-- Choices Container -->
+                <div id="sim-choices" class="space-y-4">
+                    <!-- Populated via JavaScript -->
+                </div>
+            </div>
+
+            <!-- Simulation Result / Restart button -->
+            <div id="sim-result" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 text-center space-y-4">
+                <div id="result-icon" class="w-16 h-16 mx-auto rounded-full flex items-center justify-center"></div>
+                <h3 id="result-title" class="text-2xl font-bold text-white"></h3>
+                <p id="result-desc" class="text-slate-300 max-w-2xl mx-auto"></p>
+                <button onclick="resetSimulator()" class="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl transition-all shadow-lg shadow-cyan-500/20 inline-flex items-center space-x-2">
+                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                    <span>Restart Crisis Simulation</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- VIEW 3: POST-MORTEM & AUDIT -->
+        <section id="view-postmortem" class="hidden space-y-8">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
+                <div class="max-w-3xl mb-6">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-4">
+                        Therapeutic Review & Hardening
+                    </span>
+                    <h2 class="text-3xl font-extrabold text-white tracking-tight sm:text-4xl mb-4">
+                        Post-Incident Continuous Learning Report
+                    </h2>
+                    <p class="text-slate-300 text-base leading-relaxed">
+                        In accordance with ODTN Vancouver Module 5 standards, post-mortems must avoid finger-pointing. Below is the mandatory checklist and vulnerability assessment framework for reviewing this web application prior to production submission.
+                    </p>
+                </div>
+
+                <!-- Security Checklist -->
+                <div class="space-y-4 border-t border-slate-800 pt-6">
+                    <h3 class="text-lg font-bold text-white mb-4 flex items-center space-x-2">
+                        <i data-lucide="check-square" class="w-5 h-5 text-cyan-400"></i>
+                        <span>Web Application Security Audit Checklist</span>
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 flex items-start space-x-3">
+                            <input type="checkbox" checked disabled class="mt-1 rounded bg-slate-900 border-slate-700 text-cyan-500">
+                            <div>
+                                <h4 class="text-sm font-semibold text-white">No Exposed Secrets</h4>
+                                <p class="text-xs text-slate-400">All client-side code is free of hardcoded API keys, database credentials, or secret tokens.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 flex items-start space-x-3">
+                            <input type="checkbox" checked disabled class="mt-1 rounded bg-slate-900 border-slate-700 text-cyan-500">
+                            <div>
+                                <h4 class="text-sm font-semibold text-white">Input Validation & Sanitization</h4>
+                                <p class="text-xs text-slate-400">User inputs and UI state variables are strictly constrained and validated client-side.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 flex items-start space-x-3">
+                            <input type="checkbox" checked disabled class="mt-1 rounded bg-slate-900 border-slate-700 text-cyan-500">
+                            <div>
+                                <h4 class="text-sm font-semibold text-white">Responsive & Accessible UI</h4>
+                                <p class="text-xs text-slate-400">Built using Tailwind CSS with mobile-first grid structures and high contrast typography.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50 flex items-start space-x-3">
+                            <input type="checkbox" checked disabled class="mt-1 rounded bg-slate-900 border-slate-700 text-cyan-500">
+                            <div>
+                                <h4 class="text-sm font-semibold text-white">Safe DOM Manipulation</h4>
+                                <p class="text-xs text-slate-400">Zero usage of vulnerable `innerHTML` sinks with unsanitized external data.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 border-t border-slate-800 py-6 text-center text-xs text-slate-500">
+        <p>ODTN Vancouver Module 5 Simulation Experience | Designed with AI Assistance & Security Best Practices</p>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Navigation Switcher
+        function switchTab(tabId) {
+            ['briefing', 'simulator', 'postmortem'].forEach(id => {
+                const view = document.getElementById(`view-${id}`);
+                const nav = document.getElementById(`nav-${id}`);
+                if (id === tabId) {
+                    view.classList.remove('hidden');
+                    nav.className = "px-3 py-2 rounded-lg text-sm font-medium transition-all bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 flex items-center space-x-2";
+                } else {
+                    view.classList.add('hidden');
+                    nav.className = "px-3 py-2 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800 flex items-center space-x-2";
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Crisis Simulator State Machine
+        let gameState = {
+            morale: 80,
+            legal: 50,
+            containment: 30,
+            currentStage: 1
+        };
+
+        const stages = {
+            1: {
+                title: "Zero-Day Outbreak Detected",
+                timestamp: "Timestamp: 03:42 AM PST",
+                stageLabel: "Phase 1 of 4: Initial Response",
+                desc: "EDR alarms are flashing across 40% of corporate endpoints. Initial telemetry points toward a sophisticated ransomware variant. Your tired incident response team has been awake for 14 hours straight. What is your immediate command directive?",
+                choices: [
+                    { text: "Enforce an immediate full corporate network shutdown to halt lateral movement.", moraleChange: -25, legalChange: 0, containment: +30, next: 2 },
+                    { text: "Rotate shifts immediately, establish psychological safety protocols, and isolate infected subnets selectively.", moraleChange: +15, legalChange: +10, containment: +20, next: 2 },
+                    { text: "Keep all systems online while attempting manual packet captures to preserve business revenue.", moraleChange: -10, legalChange: -20, containment: -10, next: 2 }
+                ]
+            },
+            2: {
+                title: "Third-Party Forensics & Legal Engagement",
+                timestamp: "Timestamp: 07:15 AM PST",
+                stageLabel: "Phase 2 of 4: Vendor Coordination",
+                desc: "You need external digital forensics incident response (DFIR) specialists immediately. However, your legal counsel informs you that Master Services Agreements (MSAs) and Non-Disclosure Agreements (NDAs) have not been pre-negotiated.",
+                choices: [
+                    { text: "Pause technical response to frantically negotiate custom legal contracts and SLAs from scratch.", moraleChange: -20, legalChange: -30, containment: -20, next: 3 },
+                    { text: "Activate pre-signed emergency retainer agreements established during last quarter's tabletop exercise.", moraleChange: +10, legalChange: +40, containment: +25, next: 3 },
+                    { text: "Invite unvetted external contractors to assist without formal NDAs to save precious minutes.", moraleChange: -15, legalChange: -40, containment: +10, next: 3 }
+                ]
+            },
+            3: {
+                title: "Executive Leadership & Stakeholder Pressure",
+                timestamp: "Timestamp: 11:30 AM PST",
+                stageLabel: "Phase 3 of 4: Executive Communication",
+                desc: "The CEO and Board demand an immediate public press release and want to pay the ransom to avoid stock dips. Information is still incomplete.",
+                choices: [
+                    { text: "Succumb to board pressure, pay the threat actors immediately, and issue an unverified public statement.", moraleChange: -30, legalChange: -20, containment: -20, next: 4 },
+                    { text: "Brief the board with transparent, incomplete telemetry while protecting team burnout through rotational reporting.", moraleChange: +20, legalChange: +20, containment: +25, next: 4 },
+                    { text: "Lock executives out of the war room and refuse to communicate externally until 100% certainty is reached.", moraleChange: -15, legalChange: -10, containment: +5, next: 4 }
+                ]
+            },
+            4: {
+                title: "Crisis Resolution & Post-Mortem Strategy",
+                timestamp: "Timestamp: 04:00 PM PST",
+                stageLabel: "Phase 4 of 4: Review & Hardening",
+                desc: "The active threat has been neutralized. How will you structure the post-incident review (post-mortem)?",
+                choices: [
+                    { text: "Conduct a punitive blame-game meeting to identify negligent engineers and issue disciplinary actions.", moraleChange: -40, legalChange: -10, containment: +10, end: true },
+                    { text: "Host a therapeutic, blame-free retrospective evaluating both technical recovery and team psychological resilience.", moraleChange: +35, legalChange: +30, containment: +40, end: true }
+                ]
+            }
+        };
+
+        function updateMetrics(m, l, c) {
+            gameState.morale = Math.max(0, Math.min(100, gameState.morale + m));
+            gameState.legal = Math.max(0, Math.min(100, gameState.legal + l));
+            gameState.containment = Math.max(0, Math.min(100, gameState.containment + c));
+
+            document.getElementById('metric-morale').innerText = `${gameState.morale}%`;
+            document.getElementById('bar-morale').style.width = `${gameState.morale}%`;
+
+            document.getElementById('metric-legal').innerText = `${gameState.legal}%`;
+            document.getElementById('bar-legal').style.width = `${gameState.legal}%`;
+
+            document.getElementById('metric-containment').innerText = `${gameState.containment}%`;
+            document.getElementById('bar-containment').style.width = `${gameState.containment}%`;
+        }
+
+        function loadStage(stageNum) {
+            const stage = stages[stageNum];
+            if (!stage) return;
+
+            document.getElementById('sim-stage').innerText = stage.stageLabel;
+            document.getElementById('sim-timer').innerText = stage.timestamp;
+            document.getElementById('sim-title').innerText = stage.title;
+            document.getElementById('sim-desc').innerText = stage.desc;
+
+            const choicesContainer = document.getElementById('sim-choices');
+            choicesContainer.innerHTML = '';
+
+            stage.choices.forEach((choice) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded-xl bg-slate-800 hover:bg-slate-700/80 border border-slate-700/60 hover:border-cyan-500/50 transition-all text-slate-200 text-sm sm:text-base font-medium flex items-center justify-between group";
+                btn.innerHTML = `<span>${choice.text}</span> <i data-lucide="chevron-right" class="w-5 h-5 text-slate-500 group-hover:text-cyan-400 group-hover:translate-x-1 transition-all shrink-0 ml-3"></i>`;
+                
+                btn.onclick = () => {
+                    updateMetrics(choice.moraleChange, choice.legalChange, choice.containment);
+                    if (choice.end) {
+                        showResults();
+                    } else {
+                        gameState.currentStage = choice.next;
+                        loadStage(gameState.currentStage);
+                    }
+                };
+                choicesContainer.appendChild(btn);
+            });
+            lucide.createIcons();
+        }
+
+        function showResults() {
+            document.getElementById('sim-title').parentElement.classList.add('hidden');
+            document.getElementById('sim-choices').classList.add('hidden');
+            const resultBox = document.getElementById('sim-result');
+            resultBox.classList.remove('hidden');
+
+            const resultIcon = document.getElementById('result-icon');
+            const resultTitle = document.getElementById('result-title');
+            const resultDesc = document.getElementById('result-desc');
+
+            if (gameState.morale > 50 && gameState.legal > 50 && gameState.containment > 60) {
+                resultIcon.className = "w-16 h-16 mx-auto rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center";
+                resultIcon.innerHTML = `<i data-lucide="award" class="w-8 h-8"></i>`;
+                resultTitle.innerText = "Simulation Passed: Exemplary Cyber Resilience";
+                resultDesc.innerText = "You successfully balanced technical containment with human psychological safety and pre-established legal retainers. ODTN Vancouver Module 5 principles mastered!";
+            } else {
+                resultIcon.className = "w-16 h-16 mx-auto rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center";
+                resultIcon.innerHTML = `<i data-lucide="alert-triangle" class="w-8 h-8"></i>`;
+                resultTitle.innerText = "Simulation Completed: Burnout & Friction Detected";
+                resultDesc.innerText = "While the incident was resolved, your team suffered from severe fatigue, or legal delays crippled response velocity. Review ODTN Module 5 guidelines on pre-incident MSAs and psychological support.";
+            }
+            lucide.createIcons();
+        }
+
+        function resetSimulator() {
+            gameState = { morale: 80, legal: 50, containment: 30, currentStage: 1 };
+            updateMetrics(0, 0, 0);
+            document.getElementById('sim-title').parentElement.classList.remove('hidden');
+            document.getElementById('sim-choices').classList.remove('hidden');
+            document.getElementById('sim-result').classList.add('hidden');
+            loadStage(1);
+        }
+
+        // Initialize simulator on load
+        loadStage(1);
+    </script>
+</body>
+</html>
