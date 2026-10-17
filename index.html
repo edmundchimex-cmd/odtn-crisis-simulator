@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
     <title>ODTN Vancouver Module 5: Cybersecurity Crisis Portal</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -26,15 +27,15 @@
 
     <!-- FLOATING SCROLL BUTTONS -->
     <div id="scroll-controls" class="fixed bottom-6 right-6 z-50 flex flex-col space-y-2 transition-opacity duration-300 opacity-0 pointer-events-none">
-        <button onclick="scrollToTop()" class="p-3 bg-slate-900/90 hover:bg-cyan-500 hover:text-slate-950 border border-slate-700/80 rounded-full shadow-2xl text-slate-300 transition backdrop-blur-md" title="Scroll to Top">
+        <button onclick="scrollToTop()" class="p-3 bg-slate-900/90 hover:bg-cyan-500 hover:text-slate-950 border border-slate-700/80 rounded-full shadow-2xl text-slate-300 transition backdrop-blur-md" title="Scroll to Top" aria-label="Scroll to top">
             <i data-lucide="arrow-up" class="w-5 h-5"></i>
         </button>
-        <button onclick="scrollToBottom()" class="p-3 bg-slate-900/90 hover:bg-cyan-500 hover:text-slate-950 border border-slate-700/80 rounded-full shadow-2xl text-slate-300 transition backdrop-blur-md" title="Scroll to Bottom">
+        <button onclick="scrollToBottom()" class="p-3 bg-slate-900/90 hover:bg-cyan-500 hover:text-slate-950 border border-slate-700/80 rounded-full shadow-2xl text-slate-300 transition backdrop-blur-md" title="Scroll to Bottom" aria-label="Scroll to bottom">
             <i data-lucide="arrow-down" class="w-5 h-5"></i>
         </button>
     </div>
 
-    <!-- 1. FAKE ALERT TICKER BANNER -->
+    <!-- 1. ALERT TICKER BANNER -->
     <div id="alert-banner" class="bg-amber-500/10 border-b border-amber-500/30 px-4 py-2.5 text-xs text-amber-300 flex items-center justify-between sticky top-0 z-50 backdrop-blur-md">
         <div class="flex items-center space-x-3 overflow-hidden">
             <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40 uppercase tracking-wider shrink-0 animate-pulse">
@@ -47,7 +48,7 @@
         <div class="flex items-center space-x-2 shrink-0 ml-4 font-mono text-[11px]">
             <button onclick="openTelemetryModal()" class="px-2 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 transition">Inspect Payload</button>
             <button onclick="cycleAlert()" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition">Cycle</button>
-            <button onclick="dismissAlert()" class="p-1 hover:text-white">&times;</button>
+            <button onclick="dismissAlert()" class="p-1 hover:text-white" aria-label="Dismiss alert">&times;</button>
         </div>
     </div>
 
@@ -67,12 +68,12 @@
             <!-- Login Step 1: Credentials -->
             <form id="form-login-step1" onsubmit="handleLoginStep1(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">OPERATOR IDENTIFIER</label>
-                    <input type="text" id="login-user" required placeholder="commander@odtn-vancouver.org" value="commander@odtn-vancouver.org" 
+                    <label class="block text-xs font-semibold text-slate-400 mb-1" for="login-user">OPERATOR IDENTIFIER</label>
+                    <input type="email" id="login-user" required maxlength="64" placeholder="commander@odtn-vancouver.org" value="commander@odtn-vancouver.org" autocomplete="username" 
                         class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 transition">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">COMMAND ROLE</label>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1" for="login-role">COMMAND ROLE</label>
                     <select id="login-role" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 transition">
                         <option value="Incident Commander">Incident Commander (Full Lead)</option>
                         <option value="Lead DFIR Analyst">Lead DFIR Specialist</option>
@@ -86,29 +87,30 @@
                 </button>
             </form>
 
-            <!-- Login Step 2: MFA Simulation -->
+            <!-- Login Step 2: MFA Verification -->
             <form id="form-login-mfa" onsubmit="handleMfaSubmit(event)" class="hidden space-y-4">
                 <div class="p-3 bg-cyan-500/10 border border-cyan-500/20 rounded-xl text-xs text-cyan-300 flex items-center space-x-2">
                     <i data-lucide="smartphone" class="w-4 h-4 shrink-0"></i>
-                    <span>Authenticator code sent to registered security key.</span>
+                    <span>Authenticator token generated. Enter 6-digit MFA code below.</span>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">6-DIGIT MFA TOKEN</label>
-                    <input type="text" id="mfa-token" required maxlength="6" pattern="[0-9]{6}" placeholder="849201" value="849201"
+                    <label class="block text-xs font-semibold text-slate-400 mb-1" for="mfa-token">6-DIGIT MFA TOKEN</label>
+                    <input type="text" id="mfa-token" required maxlength="6" pattern="[0-9]{6}" placeholder="849201" value="849201" autocomplete="one-time-code"
                         class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-center text-lg font-mono tracking-widest text-cyan-400 focus:outline-none focus:border-cyan-500 transition">
                 </div>
+                <div id="mfa-error" class="hidden text-xs text-rose-400 font-mono text-center">Invalid token format. Must be 6 numeric digits.</div>
                 <button type="submit" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl transition shadow-lg shadow-emerald-500/20 flex items-center justify-center space-x-2">
                     <i data-lucide="key" class="w-4 h-4"></i>
                     <span>Verify & Authenticate Session</span>
                 </button>
             </form>
 
-            <p class="text-center text-[11px] text-slate-500 font-mono">ODTN Module 5 Protocol • AES-256 Auth Simulation</p>
+            <p class="text-center text-[11px] text-slate-500 font-mono">ODTN Module 5 Protocol • Session-Bounded Auth</p>
         </div>
     </div>
 
     <!-- 3. TOP NAVIGATION HEADER -->
-    <header class="bg-slate-900/90 border-b border-slate-800 sticky top-0 z-40 backdrop-blur-md">
+    <header class="bg-slate-900/90 border-b border-slate-800 sticky top-[41px] z-40 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-3">
                 <div class="bg-cyan-500/10 p-2 rounded-xl border border-cyan-500/20 text-cyan-400">
@@ -133,7 +135,7 @@
                     </div>
                 </div>
 
-                <!-- Navigation Tabs (Desktop) -->
+                <!-- Desktop Navigation Tabs -->
                 <nav class="hidden lg:flex space-x-1 font-medium text-xs">
                     <button onclick="switchTab('briefing')" id="nav-briefing" class="px-3 py-2 rounded-lg transition bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">Home</button>
                     <button onclick="switchTab('simulator')" id="nav-simulator" class="px-3 py-2 rounded-lg transition text-slate-400 hover:text-white">Simulator</button>
@@ -144,8 +146,9 @@
                     <button onclick="switchTab('audit')" id="nav-audit" class="px-3 py-2 rounded-lg transition text-slate-400 hover:text-white">Audit</button>
                 </nav>
 
+                <!-- Mobile Dropdown Navigation -->
                 <div class="lg:hidden">
-                    <select onchange="switchTab(this.value)" class="bg-slate-950 border border-slate-800 text-xs text-white rounded-lg px-2.5 py-1.5 focus:outline-none">
+                    <select onchange="switchTab(this.value)" class="bg-slate-950 border border-slate-800 text-xs text-white rounded-lg px-2.5 py-1.5 focus:outline-none" aria-label="Navigate Portal Sections">
                         <option value="briefing">1. Home</option>
                         <option value="simulator">2. Crisis Simulator</option>
                         <option value="chat">3. SOC War Room Chat</option>
@@ -156,7 +159,7 @@
                     </select>
                 </div>
 
-                <!-- Logout Button Top Right Corner -->
+                <!-- Top Right Logout Button -->
                 <button onclick="triggerLogout()" class="flex items-center space-x-1.5 px-3 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 rounded-xl transition text-xs font-semibold shadow-sm" title="Log Out Session">
                     <i data-lucide="log-out" class="w-4 h-4"></i>
                     <span class="hidden sm:inline">Logout</span>
@@ -165,7 +168,7 @@
         </div>
     </header>
 
-    <!-- MAIN APP CONTENT -->
+    <!-- MAIN PORTAL CONTAINER -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         <!-- VIEW 1: HOME (EXECUTIVE BRIEFING) -->
@@ -266,9 +269,7 @@
                 </div>
                 <div>
                     <h3 id="sim-title" class="text-2xl font-bold text-white mb-3">Zero-Day Ransomware Outbreak</h3>
-                    <p id="sim-desc" class="text-slate-300 text-base leading-relaxed">
-                        EDR telemetry confirms active encryption across 40% of host endpoints. Threat actors are demanding 50 BTC. Your tier-2 SOC team has been awake for 14 hours straight. What is your immediate tactical directive?
-                    </p>
+                    <p id="sim-desc" class="text-slate-300 text-base leading-relaxed"></p>
                 </div>
                 <div id="sim-choices" class="space-y-3"></div>
             </div>
@@ -302,8 +303,9 @@
 
                 <div id="chat-feed" class="flex-1 overflow-y-auto space-y-4 pr-2 mb-4 font-sans">
                     <div class="flex items-start space-x-3">
-                        <div class="bg-cyan-500/20 text-cyan-400 p-2 rounded-xl font-mono font-bold text-xs shrink-0 border border-cyan-500/30">DFIR</div>
+                        <div class="bg-slate-800 text-slate-300 p-2 rounded-xl font-mono font-bold text-xs shrink-0 border border-slate-700">SOC</div>
                         <div class="bg-slate-800/80 border border-slate-700/50 p-3.5 rounded-2xl text-sm text-slate-200 max-w-xl">
+                            <strong class="text-xs block text-slate-400 mb-0.5">DFIR Lead</strong>
                             Commander, host DC-SRV-02 is isolated. Ransom note requests 50 BTC. Awaiting tactical decision on external DFIR retainer deployment.
                         </div>
                     </div>
@@ -318,7 +320,7 @@
                 </div>
 
                 <form id="chat-form" onsubmit="handleChatSubmit(event)" class="flex gap-2 pt-2 border-t border-slate-800">
-                    <input type="text" id="chat-input" autocomplete="off" placeholder="Type tactical directive to SOC team..." 
+                    <input type="text" id="chat-input" autocomplete="off" maxlength="280" placeholder="Type tactical directive to SOC team..." 
                         class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 font-mono transition">
                     <button type="submit" class="px-5 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl transition shadow-lg shadow-cyan-500/20 flex items-center space-x-2 shrink-0">
                         <span>Send</span>
@@ -393,17 +395,17 @@
                     <h3 class="text-lg font-bold text-white border-b border-slate-800 pb-3">Submit Incident Report</h3>
                     <form id="ticket-form" onsubmit="handleTicketSubmit(event)" class="space-y-4 text-xs">
                         <div>
-                            <label class="block font-semibold text-slate-400 mb-1">REPORTER NAME</label>
-                            <input type="text" id="ticket-author" required placeholder="Alex Vance" 
+                            <label class="block font-semibold text-slate-400 mb-1" for="ticket-author">REPORTER NAME</label>
+                            <input type="text" id="ticket-author" required maxlength="50" placeholder="Alex Vance" 
                                 class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-cyan-500">
                         </div>
                         <div>
-                            <label class="block font-semibold text-slate-400 mb-1">TARGET ASSET / IP</label>
-                            <input type="text" id="ticket-asset" required placeholder="10.0.4.12 / DC-SRV-02" 
+                            <label class="block font-semibold text-slate-400 mb-1" for="ticket-asset">TARGET ASSET / IP</label>
+                            <input type="text" id="ticket-asset" required maxlength="50" placeholder="10.0.4.12 / DC-SRV-02" 
                                 class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-cyan-500">
                         </div>
                         <div>
-                            <label class="block font-semibold text-slate-400 mb-1">SEVERITY LEVEL</label>
+                            <label class="block font-semibold text-slate-400 mb-1" for="ticket-severity">SEVERITY LEVEL</label>
                             <select id="ticket-severity" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-cyan-500">
                                 <option value="Critical">Critical (P0 - Immediate Outbreak)</option>
                                 <option value="High">High (P1 - Unverified Exploitation)</option>
@@ -411,8 +413,8 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block font-semibold text-slate-400 mb-1">DETAILED OBSERVATION</label>
-                            <textarea id="ticket-notes" required rows="3" placeholder="Describe anomaly or human factor observation..." 
+                            <label class="block font-semibold text-slate-400 mb-1" for="ticket-notes">DETAILED OBSERVATION</label>
+                            <textarea id="ticket-notes" required maxlength="300" rows="3" placeholder="Describe anomaly or human factor observation..." 
                                 class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-cyan-500"></textarea>
                         </div>
                         <button type="submit" class="w-full py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl transition shadow-lg shadow-cyan-500/20">
@@ -431,9 +433,7 @@
                             <button onclick="filterTickets('High')" id="filter-high" class="px-2.5 py-1 rounded bg-slate-800 text-slate-400 hover:text-white transition">High</button>
                         </div>
                     </div>
-                    <div id="tickets-container" class="space-y-3 max-h-[420px] overflow-y-auto pr-1">
-                        <!-- Dynamic Tickets -->
-                    </div>
+                    <div id="tickets-container" class="space-y-3 max-h-[420px] overflow-y-auto pr-1"></div>
                 </div>
             </div>
         </section>
@@ -521,14 +521,13 @@
                     <i data-lucide="terminal" class="w-5 h-5 text-cyan-400"></i>
                     <span>EDR Payload Telemetry Inspection</span>
                 </h3>
-                <button onclick="closeTelemetryModal()" class="text-slate-400 hover:text-white text-lg font-bold">&times;</button>
+                <button onclick="closeTelemetryModal()" class="text-slate-400 hover:text-white text-lg font-bold" aria-label="Close telemetry modal">&times;</button>
             </div>
             <div class="bg-slate-950 p-4 rounded-xl font-mono text-xs text-cyan-300 space-y-2 border border-slate-800/80 overflow-x-auto">
                 <p class="text-slate-400"># Process Tree Inspection (DC-SRV-02)</p>
                 <p>Parent: <span class="text-white">C:\Windows\System32\wbem\WmiPrvSE.exe</span></p>
                 <p>Target: <span class="text-rose-400">C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</span></p>
                 <p>Arguments: <span class="text-amber-300">-enc VwBzAHMAYQBkAG0AZQBuACAAZABlAGwAZQB0AGUAIABzAGgAYQBkAG8AdwBzACAALwBhAGwAbAA=</span></p>
-                <p class="text-slate-500 mt-2">// Hash: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</p>
             </div>
             <div class="flex justify-end pt-2">
                 <button onclick="closeTelemetryModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs rounded-xl font-semibold transition">Close Modal</button>
@@ -538,17 +537,33 @@
 
     <!-- JAVASCRIPT CONTROLLER -->
     <script>
-        // Initialize Icons
+        lucide.createIcons();
+
+        // DOM Sanitizer function (Mitigates DOM-based XSS)
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Session State & Initialization
         window.addEventListener('DOMContentLoaded', () => {
-            if (typeof lucide !== 'undefined') {
-                lucide.createIcons();
+            const activeSession = sessionStorage.getItem('odtn_session_active');
+            if (activeSession === 'true') {
+                document.getElementById('login-overlay').classList.add('hidden');
+                document.getElementById('badge-user').innerText = escapeHTML(sessionStorage.getItem('odtn_user') || 'Commander');
+                document.getElementById('badge-role').innerText = escapeHTML(sessionStorage.getItem('odtn_role') || 'Incident Commander');
             }
         });
 
-        // Scroll Control Logic
+        // Scroll Control Listener
         window.addEventListener('scroll', () => {
             const scroller = document.getElementById('scroll-controls');
-            if (window.scrollY > 200) {
+            if (window.scrollY > 250) {
                 scroller.classList.remove('opacity-0', 'pointer-events-none');
             } else {
                 scroller.classList.add('opacity-0', 'pointer-events-none');
@@ -563,42 +578,49 @@
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         }
 
-        // Login & Authentication Flow Controller
+        // Authentication Flow
         function handleLoginStep1(e) {
             e.preventDefault();
-            const user = document.getElementById('login-user').value.trim();
-            if (!user) return;
-            
-            // Advance to Step 2 (MFA)
             document.getElementById('form-login-step1').classList.add('hidden');
             document.getElementById('form-login-mfa').classList.remove('hidden');
         }
 
         function handleMfaSubmit(e) {
             e.preventDefault();
-            const token = document.getElementById('mfa-token').value.trim();
-            if (token.length !== 6) return;
+            const tokenInput = document.getElementById('mfa-token').value.trim();
+            const errDiv = document.getElementById('mfa-error');
 
-            const user = document.getElementById('login-user').value;
-            const role = document.getElementById('login-role').value;
-            
-            // Update Session Badge Text
-            const username = user.includes('@') ? user.split('@')[0] : user;
-            document.getElementById('badge-user').innerText = username.charAt(0).toUpperCase() + username.slice(1);
-            document.getElementById('badge-role').innerText = role;
-            
-            // Dismiss Login Overlay and Show Portal
+            if (!/^\d{6}$/.test(tokenInput)) {
+                errDiv.classList.remove('hidden');
+                return;
+            }
+            errDiv.classList.add('hidden');
+
+            const rawUser = document.getElementById('login-user').value.trim();
+            const rawRole = document.getElementById('login-role').value;
+            const cleanUser = rawUser.split('@')[0] || 'Commander';
+
+            sessionStorage.setItem('odtn_session_active', 'true');
+            sessionStorage.setItem('odtn_user', cleanUser);
+            sessionStorage.setItem('odtn_role', rawRole);
+
+            document.getElementById('badge-user').innerText = escapeHTML(cleanUser);
+            document.getElementById('badge-role').innerText = escapeHTML(rawRole);
             document.getElementById('login-overlay').classList.add('hidden');
         }
 
         function triggerLogout() {
-            // Re-open Login Gateway Overlay & Reset Forms
-            document.getElementById('login-overlay').classList.remove('hidden');
+            sessionStorage.removeItem('odtn_session_active');
+            sessionStorage.removeItem('odtn_user');
+            sessionStorage.removeItem('odtn_role');
+
+            document.getElementById('mfa-token').value = '849201';
             document.getElementById('form-login-mfa').classList.add('hidden');
             document.getElementById('form-login-step1').classList.remove('hidden');
+            document.getElementById('login-overlay').classList.remove('hidden');
         }
 
-        // Tab Navigation
+        // Tab Navigation Controller
         const views = ['briefing', 'simulator', 'chat', 'timeline', 'submissions', 'quiz', 'audit'];
         function switchTab(viewId) {
             views.forEach(v => {
@@ -627,21 +649,24 @@
         let alertIdx = 0;
         function cycleAlert() {
             alertIdx = (alertIdx + 1) % alerts.length;
-            document.getElementById('alert-text').innerHTML = `<strong>[Alert]</strong> ${alerts[alertIdx]}`;
+            document.getElementById('alert-text').innerHTML = `<strong>[Alert]</strong> ${escapeHTML(alerts[alertIdx])}`;
         }
         function dismissAlert() {
             document.getElementById('alert-banner').style.display = 'none';
         }
 
-        // Telemetry Modal
+        // Modal Controls & Escape Key Listener
         function openTelemetryModal() {
             document.getElementById('telemetry-modal').classList.remove('hidden');
         }
         function closeTelemetryModal() {
             document.getElementById('telemetry-modal').classList.add('hidden');
         }
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeTelemetryModal();
+        });
 
-        // Crisis Simulator State Controller
+        // Crisis Simulator State Engine
         let simState = { stage: 1, morale: 80, legal: 50, containment: 30 };
         const simStages = {
             1: {
@@ -691,11 +716,11 @@
             stageData.choices.forEach((choice) => {
                 const btn = document.createElement('button');
                 btn.className = "w-full text-left p-4 bg-slate-950 hover:bg-slate-800/80 border border-slate-800 hover:border-cyan-500/50 rounded-xl transition text-sm text-slate-200 flex items-center justify-between group";
-                btn.innerHTML = `<span>${choice.text}</span> <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500 group-hover:text-cyan-400 shrink-0 ml-2"></i>`;
+                btn.innerHTML = `<span>${escapeHTML(choice.text)}</span> <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500 group-hover:text-cyan-400 shrink-0 ml-2"></i>`;
                 btn.onclick = () => handleChoice(choice);
                 choicesDiv.appendChild(btn);
             });
-            if (typeof lucide !== 'undefined') lucide.createIcons();
+            lucide.createIcons();
         }
 
         function handleChoice(choice) {
@@ -729,8 +754,9 @@
             document.getElementById('sim-active-card').classList.remove('hidden');
             renderSimulator();
         }
+        renderSimulator();
 
-        // SOC Command Chat Logic
+        // SOC Chat Command Handler
         function handleChatSubmit(e) {
             e.preventDefault();
             const input = document.getElementById('chat-input');
@@ -742,11 +768,12 @@
 
             setTimeout(() => {
                 let response = "Acknowledged commander. Executing directive across active nodes.";
-                if (text.toLowerCase().includes("subnet")) response = "Subnet isolation protocols initiated. Segment firewall rules updated.";
-                else if (text.toLowerCase().includes("msa")) response = "External DFIR vendor notified via pre-signed MSA retainer. Onboarding in progress.";
-                else if (text.toLowerCase().includes("rotate")) response = "Shift crew handover complete. Fresh analysts are online.";
+                const lower = text.toLowerCase();
+                if (lower.includes("subnet")) response = "Subnet isolation protocols initiated. Segment firewall rules updated.";
+                else if (lower.includes("msa")) response = "External DFIR vendor notified via pre-signed MSA retainer. Onboarding in progress.";
+                else if (lower.includes("rotate")) response = "Shift crew handover complete. Rested secondary analysts are online.";
                 appendChatMessage("DFIR Lead", response, "slate");
-            }, 700);
+            }, 750);
         }
 
         function sendQuickCommand(cmd) {
@@ -761,8 +788,8 @@
             div.innerHTML = `
                 <div class="${isCommander ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30' : 'bg-slate-800 text-slate-300 border-slate-700'} p-2 rounded-xl font-mono font-bold text-xs shrink-0 border">${isCommander ? 'CMD' : 'SOC'}</div>
                 <div class="bg-slate-800/80 border border-slate-700/50 p-3.5 rounded-2xl text-sm text-slate-200 max-w-xl">
-                    <strong class="text-xs block text-slate-400 mb-0.5">${sender}</strong>
-                    ${text}
+                    <strong class="text-xs block text-slate-400 mb-0.5">${escapeHTML(sender)}</strong>
+                    ${escapeHTML(text)}
                 </div>
             `;
             feed.appendChild(div);
@@ -773,13 +800,13 @@
             document.getElementById('chat-feed').innerHTML = '';
         }
 
-        // Timeline Toggle
+        // Timeline Accordion Toggle
         function toggleTimelineDetails(id) {
             const el = document.getElementById(id);
             if (el) el.classList.toggle('hidden');
         }
 
-        // Tickets System
+        // Incident Submissions Queue
         let tickets = [
             { id: 1, author: "Alex Vance", asset: "DC-SRV-02", severity: "Critical", notes: "Shadow copies deleted via encrypted PowerShell payload." },
             { id: 2, author: "Sarah Connor", asset: "VLAN 104 Gateway", severity: "High", notes: "Unusual outbound beaconing detected on port 443." }
@@ -801,12 +828,12 @@
                 const sevColor = t.severity === 'Critical' ? 'bg-rose-500/20 text-rose-400 border-rose-500/30' : 'bg-amber-500/20 text-amber-400 border-amber-500/30';
                 card.innerHTML = `
                     <div class="flex items-center justify-between">
-                        <span class="font-bold text-white">${t.asset}</span>
-                        <span class="px-2 py-0.5 rounded border text-[10px] font-mono ${sevColor}">${t.severity}</span>
+                        <span class="font-bold text-white">${escapeHTML(t.asset)}</span>
+                        <span class="px-2 py-0.5 rounded border text-[10px] font-mono ${sevColor}">${escapeHTML(t.severity)}</span>
                     </div>
-                    <p class="text-slate-300">${t.notes}</p>
+                    <p class="text-slate-300">${escapeHTML(t.notes)}</p>
                     <div class="text-[10px] text-slate-500 font-mono flex justify-between pt-1 border-t border-slate-900">
-                        <span>Reporter: ${t.author}</span>
+                        <span>Reporter: ${escapeHTML(t.author)}</span>
                         <span>Ticket #${t.id}</span>
                     </div>
                 `;
@@ -816,10 +843,10 @@
 
         function handleTicketSubmit(e) {
             e.preventDefault();
-            const author = document.getElementById('ticket-author').value;
-            const asset = document.getElementById('ticket-asset').value;
+            const author = document.getElementById('ticket-author').value.trim();
+            const asset = document.getElementById('ticket-asset').value.trim();
             const severity = document.getElementById('ticket-severity').value;
-            const notes = document.getElementById('ticket-notes').value;
+            const notes = document.getElementById('ticket-notes').value.trim();
 
             tickets.unshift({ id: tickets.length + 1, author, asset, severity, notes });
             document.getElementById('ticket-form').reset();
@@ -835,8 +862,9 @@
             });
             renderTickets(level);
         }
+        renderTickets('All');
 
-        // Quiz Controller
+        // Assessment Quiz State
         const quizData = [
             {
                 q: "Why are pre-signed Master Services Agreements (MSAs) critical during a ransomware crisis?",
@@ -899,18 +927,14 @@
             document.getElementById('quiz-card').classList.remove('hidden');
             renderQuiz();
         }
+        renderQuiz();
 
-        // Audit Matrix
+        // Audit Progress Calculator
         function updateAuditProgress() {
             const checkboxes = document.querySelectorAll('#view-audit input[type="checkbox"]');
             const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
             document.getElementById('audit-score').innerText = `${checkedCount} / ${checkboxes.length} Completed`;
         }
-
-        // Initialize state
-        renderSimulator();
-        renderTickets('All');
-        renderQuiz();
     </script>
 </body>
 </html>
