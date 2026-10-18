@@ -55,8 +55,8 @@
                 <p class="text-xs text-slate-400">Supabase Auth sign-in · security training demo</p>
             </div>
 
-            <!-- Added method="POST" to prevent URL exposure -->
-            <form id="form-login-step1" method="POST" onsubmit="handleLogin(event)" class="space-y-4">
+            <!-- Removed method="POST" to prevent HTTP 405 error on static hosting -->
+            <form id="form-login-step1" onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-semibold text-slate-400 mb-1.5" for="login-user">USERNAME (EMAIL ADDRESS)</label>
                     <input type="email" id="login-user" name="username" required maxlength="254" value="edmundchimex@gmail.com" placeholder="Enter your email" autocomplete="username"
