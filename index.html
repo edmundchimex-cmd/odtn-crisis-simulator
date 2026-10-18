@@ -103,8 +103,7 @@
     <!-- Supabase Client & Login Handling Script -->
     <script>
         const SUPABASE_URL = 'https://yyuszmuyjuxuazakgasa.supabase.co';
-        // MAKE SURE THIS IS YOUR EXACT PUBLISHABLE KEY FROM SUPABASE DASHBOARD:
-        const SUPABASE_ANON_KEY = 'PASTE_YOUR_ACTUAL_PUBLISHABLE_KEY_HERE'; 
+        const SUPABASE_ANON_KEY = 'sb_publishable_lrHJAHoRR74jO8I5jV_45g_3KYEHDy5'; 
         
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -117,7 +116,6 @@
         });
 
         async function handleLogin(event) {
-            // STOP the default form submission completely to prevent URL exposure
             event.preventDefault();
             
             const email = document.getElementById('login-user').value.trim();
