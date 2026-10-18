@@ -1,940 +1,2037 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-950">
+
+<html lang="en" class="h-full bg-slate-950 dark">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <meta name="referrer" content="no-referrer">
-    <title>ODTN Vancouver Module 5: Cybersecurity Crisis Portal</title>
-    <!-- Tailwind CSS -->
+
+    <title>ODTN Vancouver | Module 5 Cyber Incident Response</title>
+    <meta name="description" content="An interactive learning portal for cyber incident response, human factors, legal readiness, evidence handling, and operational resilience.">
+    <meta name="theme-color" content="#070a14">
+
+    <!-- SECURITY NOTE: This is a client-side training demo, not a production security portal. Authentication, role checks, persistence, and audit records are not server-backed. For production, self-host pinned dependencies and configure CSP/security headers at the web server. This single-file training demo uses inline JS/event handlers and a CDN stylesheet, so a strict CSP cannot be safely added as a meta tag without refactoring. -->
+    <!-- Tailwind CSS (development/demo use; compile and self-host for production) -->
+
     <script src="https://cdn.tailwindcss.com"></script>
+
     <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script src="https://unpkg.com/lucide@0.468.0"></script>
+
     <script>
+
         tailwind.config = {
+
             darkMode: 'class',
+
             theme: {
+
                 extend: {
+
                     colors: {
+
                         slate: { 850: '#131b2e', 950: '#070a14' },
+
                         cyan: { 450: '#18bcdb' }
+
+                    },
+
+                    fontFamily: {
+
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+
+                        mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+
+                    },
+
+                    animation: {
+
+                        'pulse-fast': 'pulse 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+
+                        'glow': 'glow 3s ease-in-out infinite alternate',
+
+                    },
+
+                    keyframes: {
+
+                        glow: {
+
+                            '0%': { boxShadow: '0 0 15px rgba(6, 182, 212, 0.15)' },
+
+                            '100%': { boxShadow: '0 0 30px rgba(6, 182, 212, 0.35)' }
+
+                        }
+
                     }
+
                 }
+
             }
+
         }
+
     </script>
+
+    <style>
+        :root { color-scheme: dark; scroll-behavior: smooth; }
+        body { text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+        button, input, select, textarea { font: inherit; }
+        button { -webkit-tap-highlight-color: transparent; }
+        :focus-visible { outline: 2px solid #22d3ee !important; outline-offset: 3px; }
+        ::selection { background: rgba(34, 211, 238, .28); color: #f8fafc; }
+        .skip-link { position: fixed; top: 8px; left: 8px; z-index: 100; transform: translateY(-160%); background: #22d3ee; color: #07111d; padding: 10px 14px; border-radius: 8px; font-weight: 700; }
+        .skip-link:focus { transform: translateY(0); }
+        .hidden { display: none !important; }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        }
+
+        .core-theme-heading {
+            display: inline-block;
+            background: linear-gradient(90deg, #22d3ee 0%, #a78bfa 25%, #f472b6 50%, #fbbf24 75%, #34d399 100%);
+            background-size: 250% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 18px rgba(34, 211, 238, .12);
+            animation: coreThemeColorShift 5s linear infinite, coreThemeBounce 2.8s ease-in-out infinite;
+        }
+        @keyframes coreThemeColorShift {
+            0% { background-position: 0% center; }
+            100% { background-position: 250% center; }
+        }
+        @keyframes coreThemeBounce {
+            0%, 72%, 100% { transform: translateY(0); }
+            80% { transform: translateY(-5px); }
+            88% { transform: translateY(0); }
+            94% { transform: translateY(-2px); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .core-theme-heading { animation: none; background-position: center; }
+        }
+
+
+        .resilience-network { position: relative; width: 260px; height: 190px; flex: 0 0 auto; }
+        .resilience-network .network-orbit { position: absolute; left: 50%; top: 50%; border: 1px solid rgba(34,211,238,.18); border-radius: 50%; transform: translate(-50%,-50%); }
+        .resilience-network .orbit-one { width: 155px; height: 155px; animation: orbitPulse 4s ease-in-out infinite; }
+        .resilience-network .orbit-two { width: 215px; height: 120px; border-color: rgba(167,139,250,.2); animation: orbitPulse 4s ease-in-out infinite reverse; }
+        .resilience-network .network-line { position: absolute; left: 50%; top: 50%; height: 1px; width: 95px; transform-origin: left center; background: linear-gradient(90deg,rgba(34,211,238,.65),rgba(167,139,250,.12)); }
+        .resilience-network .line-a { transform: rotate(-145deg); }
+        .resilience-network .line-b { transform: rotate(-35deg); }
+        .resilience-network .line-c { transform: rotate(90deg); }
+        .resilience-network .network-node { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; width: 64px; height: 64px; border: 1px solid rgba(71,85,105,.9); border-radius: 18px; background: #0f172a; box-shadow: 0 0 24px rgba(34,211,238,.08); animation: nodeFloat 3.6s ease-in-out infinite; }
+        .resilience-network .network-node svg { width: 19px; height: 19px; }
+        .resilience-network .network-node small { font-size: 10px; font-weight: 600; color: #cbd5e1; }
+        .resilience-network .node-people { left: 3px; top: 6px; color: #22d3ee; }
+        .resilience-network .node-ready { right: 3px; top: 6px; color: #a78bfa; animation-delay: -.9s; }
+        .resilience-network .node-learn { left: calc(50% - 32px); bottom: 0; color: #34d399; animation-delay: -1.8s; }
+        .resilience-network .network-core { position: absolute; left: calc(50% - 21px); top: calc(50% - 21px); display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; color: #e0f2fe; background: radial-gradient(circle,rgba(34,211,238,.3),rgba(15,23,42,.9)); border: 1px solid rgba(34,211,238,.55); animation: coreGlow 2.5s ease-in-out infinite; }
+        .resilience-network .network-core svg { width: 20px; height: 20px; }
+        @keyframes nodeFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        @keyframes orbitPulse { 0%,100% { opacity: .45; } 50% { opacity: 1; } }
+        @keyframes coreGlow { 0%,100% { box-shadow: 0 0 10px rgba(34,211,238,.12); } 50% { box-shadow: 0 0 26px rgba(34,211,238,.38); } }
+        @media (max-width: 639px) { .resilience-network { transform: scale(.92); margin: -3px 0; } }
+        @media (prefers-reduced-motion: reduce) { .resilience-network *, .resilience-network::before { animation: none !important; } }
+
+        /* Custom scrollbar for cyber aesthetic */
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+
+        ::-webkit-scrollbar-track { background: #070a14; }
+
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+
+        ::-webkit-scrollbar-thumb:hover { background: #0891b2; }
+
+
+        /* Professional executive palette: midnight navy, teal, and restrained champagne accents */
+        :root {
+            --odtn-navy: #0b1424;
+            --odtn-panel: #111f33;
+            --odtn-teal: #5eead4;
+            --odtn-teal-deep: #0f766e;
+            --odtn-gold: #d6b779;
+        }
+        body {
+            background-color: var(--odtn-navy) !important;
+            background-image: radial-gradient(ellipse at top, #183047 0%, #0b1424 48%, #070d18 100%) !important;
+        }
+        #view-briefing > div:first-child {
+            background: linear-gradient(125deg, rgba(17,31,51,.98), rgba(13,29,43,.96) 58%, rgba(15,47,55,.72)) !important;
+            border-color: rgba(94,234,212,.25) !important;
+            box-shadow: 0 18px 50px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.035);
+        }
+        #view-briefing > div:first-child h2 { text-wrap: balance; }
+        #view-briefing .grid > button {
+            background: linear-gradient(145deg, rgba(17,31,51,.96), rgba(13,23,39,.96)) !important;
+            border-color: rgba(148,163,184,.2) !important;
+            box-shadow: 0 8px 24px rgba(0,0,0,.12);
+        }
+        #view-briefing .grid > button:hover {
+            border-color: rgba(94,234,212,.55) !important;
+            box-shadow: 0 12px 28px rgba(13,148,136,.10);
+        }
+        .resilience-visual {
+            background: linear-gradient(115deg, rgba(15,31,49,.98), rgba(14,35,45,.92)) !important;
+            border-color: rgba(214,183,121,.26) !important;
+        }
+        .resilience-visual > div > div:first-child p:first-child { color: var(--odtn-gold) !important; }
+        header, nav[aria-label="Learning activity shortcuts"] {
+            border-color: rgba(148,163,184,.18) !important;
+        }
+        ::-webkit-scrollbar-thumb:hover { background: #5eead4; }
+
+        /* Core resilience theme cards: rise and glow in distinct colours on hover/focus */
+        #view-briefing [aria-labelledby="pillars-title"] .grid > button {
+            position: relative;
+            overflow: hidden;
+            transform: translateY(0);
+            transition: transform .24s ease, border-color .24s ease, box-shadow .24s ease, background .24s ease;
+            will-change: transform;
+        }
+        #view-briefing [aria-labelledby="pillars-title"] .grid > button:nth-child(1):hover,
+        #view-briefing [aria-labelledby="pillars-title"] .grid > button:nth-child(1):focus-visible {
+            transform: translateY(-8px); border-color: rgba(34,211,238,.95) !important;
+            background: linear-gradient(145deg, rgba(8,47,73,.98), rgba(15,23,42,.98)) !important;
+            box-shadow: 0 18px 34px rgba(6,182,212,.22), 0 0 0 1px rgba(34,211,238,.22);
+        }
+        #view-briefing [aria-labelledby="pillars-title"] .grid > button:nth-child(2):hover,
+        #view-briefing [aria-labelledby="pillars-title"] .grid > button:nth-child(2):focus-visible {
+            transform: translateY(-8px); border-color: rgba(167,139,250,.95) !important;
+            background: linear-gradient(145deg, rgba(46,26,78,.98), rgba(15,23,42,.98)) !important;
+            box-shadow: 0 18px 34px rgba(139,92,246,.24), 0 0 0 1px rgba(167,139,250,.22);
+        }
+        #view-briefing [aria-labelledby="pillars-title"] .grid > button:nth-child(3):hover,
+        #view-briefing [aria-labelledby="pillars-title"] .grid > button:nth-child(3):focus-visible {
+            transform: translateY(-8px); border-color: rgba(52,211,153,.95) !important;
+            background: linear-gradient(145deg, rgba(6,61,52,.98), rgba(15,23,42,.98)) !important;
+            box-shadow: 0 18px 34px rgba(16,185,129,.22), 0 0 0 1px rgba(52,211,153,.22);
+        }
+        #view-briefing [aria-labelledby="pillars-title"] .grid > button:nth-child(1):hover > span:first-child { background: rgba(8,145,178,.28); color: #67e8f9; }
+        #view-briefing [aria-labelledby="pillars-title"] .grid > button:nth-child(2):hover > span:first-child { background: rgba(124,58,237,.28); color: #c4b5fd; }
+        #view-briefing [aria-labelledby="pillars-title"] .grid > button:nth-child(3):hover > span:first-child { background: rgba(5,150,105,.28); color: #6ee7b7; }
+        @media (prefers-reduced-motion: reduce) {
+            #view-briefing [aria-labelledby="pillars-title"] .grid > button { transition: none; }
+            #view-briefing [aria-labelledby="pillars-title"] .grid > button:hover,
+            #view-briefing [aria-labelledby="pillars-title"] .grid > button:focus-visible { transform: none; }
+        }
+
+    </style>
+
 </head>
-<body class="h-full text-slate-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-slate-950 relative overflow-x-hidden">
+
+<body class="h-full text-slate-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-slate-950 relative overflow-x-hidden min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950">
+
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+
 
     <!-- FLOATING SCROLL BUTTONS -->
-    <div id="scroll-controls" class="fixed bottom-6 right-6 z-50 flex flex-col space-y-2 transition-opacity duration-300 opacity-0 pointer-events-none">
-        <button onclick="scrollToTop()" class="p-3 bg-slate-900/90 hover:bg-cyan-500 hover:text-slate-950 border border-slate-700/80 rounded-full shadow-2xl text-slate-300 transition backdrop-blur-md" title="Scroll to Top" aria-label="Scroll to top">
+
+    <div id="scroll-controls" class="fixed bottom-6 right-6 z-50 flex flex-col space-y-2.5 transition-all duration-300 opacity-0 pointer-events-none">
+
+        <button onclick="scrollToTop()" class="p-3 bg-slate-900/90 hover:bg-cyan-500 hover:text-slate-950 border border-slate-700/80 rounded-full shadow-2xl text-slate-300 transition-all transform hover:scale-110 backdrop-blur-md" title="Scroll to Top" aria-label="Scroll to top">
+
             <i data-lucide="arrow-up" class="w-5 h-5"></i>
+
         </button>
-        <button onclick="scrollToBottom()" class="p-3 bg-slate-900/90 hover:bg-cyan-500 hover:text-slate-950 border border-slate-700/80 rounded-full shadow-2xl text-slate-300 transition backdrop-blur-md" title="Scroll to Bottom" aria-label="Scroll to bottom">
+
+        <button onclick="scrollToBottom()" class="p-3 bg-slate-900/90 hover:bg-cyan-500 hover:text-slate-950 border border-slate-700/80 rounded-full shadow-2xl text-slate-300 transition-all transform hover:scale-110 backdrop-blur-md" title="Scroll to Bottom" aria-label="Scroll to bottom">
+
             <i data-lucide="arrow-down" class="w-5 h-5"></i>
+
         </button>
+
     </div>
+
+
 
     <!-- 1. ALERT TICKER BANNER -->
-    <div id="alert-banner" class="bg-amber-500/10 border-b border-amber-500/30 px-4 py-2.5 text-xs text-amber-300 flex items-center justify-between sticky top-0 z-50 backdrop-blur-md">
-        <div class="flex items-center space-x-3 overflow-hidden">
-            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40 uppercase tracking-wider shrink-0 animate-pulse">
-                CRITICAL ALERT
+
+    <div id="alert-banner" class="bg-amber-500/10 border-b border-amber-500/30 px-4 py-2 text-xs text-amber-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sticky top-0 z-50 backdrop-blur-md shadow-lg shadow-amber-950/20">
+
+        <div class="flex items-center space-x-3 overflow-hidden w-full sm:w-auto">
+
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40 uppercase tracking-wider shrink-0 animate-pulse-fast">
+
+                <i data-lucide="alert-triangle" class="w-3 h-3"></i> CRITICAL ALERT
+
             </span>
-            <p id="alert-text" class="truncate font-mono">
+
+            <p id="alert-text" class="truncate font-mono text-xs text-amber-200">
+
                 <strong>[03:42:11 PST]</strong> LockBit ransomware payload execution detected on Host DC-SRV-02 (VLAN 104).
+
             </p>
+
         </div>
-        <div class="flex items-center space-x-2 shrink-0 ml-4 font-mono text-[11px]">
-            <button onclick="openTelemetryModal()" class="px-2 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 transition">Inspect Payload</button>
-            <button onclick="cycleAlert()" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition">Cycle</button>
-            <button onclick="dismissAlert()" class="p-1 hover:text-white" aria-label="Dismiss alert">&times;</button>
+
+        <div class="flex items-center space-x-2 shrink-0 font-mono text-[11px] self-end sm:self-auto">
+
+            <button onclick="openTelemetryModal()" class="px-2.5 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 transition font-semibold flex items-center gap-1">
+
+                <i data-lucide="activity" class="w-3 h-3"></i> Inspect Payload
+
+            </button>
+
+            <button onclick="cycleAlert()" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">Cycle</button>
+
+            <button onclick="dismissAlert()" class="p-1 hover:text-white transition text-slate-400" aria-label="Dismiss alert">&times;</button>
+
         </div>
+
     </div>
 
-    <!-- 2. LOGIN & MFA GATEWAY OVERLAY -->
-    <div id="login-overlay" class="fixed inset-0 bg-slate-950/95 z-50 flex items-center justify-center p-4 backdrop-blur-lg">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 sm:p-8 shadow-2xl space-y-6 relative overflow-hidden">
-            <div class="absolute -right-12 -top-12 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none"></div>
-            
+
+
+    <!-- LOGIN OVERLAY -->
+
+    <div id="login-overlay" class="fixed inset-0 bg-slate-950/95 z-50 flex items-center justify-center p-4 backdrop-blur-xl">
+
+        <div class="bg-slate-900/90 border border-slate-800 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl space-y-6 relative overflow-hidden backdrop-blur-md">
+
+            <div class="absolute -right-12 -top-12 w-36 h-36 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+
+
             <div class="text-center space-y-2">
-                <div class="bg-cyan-500/10 p-3 rounded-2xl border border-cyan-500/20 w-fit mx-auto text-cyan-400">
+
+                <div class="bg-cyan-500/10 p-3.5 rounded-2xl border border-cyan-500/20 w-fit mx-auto text-cyan-400 shadow-inner">
+
                     <i data-lucide="shield-check" class="w-8 h-8"></i>
+
                 </div>
+
                 <h2 class="text-2xl font-bold text-white tracking-tight">ODTN Secure Portal</h2>
-                <p class="text-xs text-slate-400">Incident Command Authentication Gate</p>
+
+                <p class="text-xs text-slate-400">Demo access · account verification is not connected</p>
+
             </div>
 
-            <!-- Login Step 1: Credentials -->
+
+
+            <!-- Login Step 1 -->
+
             <form id="form-login-step1" onsubmit="handleLoginStep1(event)" class="space-y-4">
+
                 <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1" for="login-user">USERNAME</label>
-                    <input type="email" id="login-user" required maxlength="64" placeholder="commander@odtn-vancouver.org" value="commander@odtn-vancouver.org" autocomplete="username" 
-                        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 transition">
+
+                    <label class="block text-xs font-semibold text-slate-400 mb-1.5" for="login-user">OPERATOR ID</label>
+
+                    <input type="email" id="login-user" required maxlength="64" placeholder="operator@odtn-vancouver.ca" autocomplete="username"&#x20;
+
+                        class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 transition shadow-inner">
+
                 </div>
+
                 <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1" for="login-role">ROLE</label>
-                    <select id="login-role" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 transition">
-                        <option value="Incident Commander">Incident Commander (Full Lead)</option>
+
+                    <label class="block text-xs font-semibold text-slate-400 mb-1.5" for="login-role">ROLE</label>
+
+                    <select id="login-role" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 transition">
+
+                        <option value="Incident Commander">Incident Manager (Full Lead)</option>
+
                         <option value="Lead DFIR Analyst">Lead DFIR Specialist</option>
+
                         <option value="Legal Counsel">Legal & Compliance Counsel</option>
+
                         <option value="Security Auditor">Security Auditor</option>
+
                     </select>
+
                 </div>
-                <button type="submit" class="w-full py-3.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl transition shadow-lg shadow-cyan-500/20 flex items-center justify-center space-x-2">
+
+                <button type="submit" class="w-full py-3.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl transition shadow-lg shadow-cyan-500/25 flex items-center justify-center space-x-2">
+
                     <span>Proceed to MFA Verification</span>
+
                     <i data-lucide="arrow-right" class="w-4 h-4"></i>
+
                 </button>
+
             </form>
 
-            <!-- Login Step 2: MFA Verification -->
+
+
+            <!-- Login Step 2 -->
+
             <form id="form-login-mfa" onsubmit="handleMfaSubmit(event)" class="hidden space-y-4">
+
                 <div class="p-3 bg-cyan-500/10 border border-cyan-500/20 rounded-xl text-xs text-cyan-300 flex items-center space-x-2">
+
                     <i data-lucide="smartphone" class="w-4 h-4 shrink-0"></i>
-                    <span>Authenticator token generated. Enter 6-digit MFA code below.</span>
+
+                    <span>Demo verification only. Training simulation only: any six digits pass this local demo gate. No identity is verified and no real MFA service is connected.</span>
+
                 </div>
+
                 <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1" for="mfa-token">6-DIGIT MFA TOKEN</label>
-                    <input type="text" id="mfa-token" required maxlength="6" pattern="[0-9]{6}" placeholder="849201" value="849201" autocomplete="one-time-code"
-                        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-center text-lg font-mono tracking-widest text-cyan-400 focus:outline-none focus:border-cyan-500 transition">
+
+                    <label class="block text-xs font-semibold text-slate-400 mb-1.5" for="mfa-token">6-DIGIT MFA TOKEN</label>
+
+                    <input type="text" id="mfa-token" required maxlength="6" minlength="6" inputmode="numeric" pattern="[0-9]{6}" placeholder="Enter any 6 digits for this demo" autocomplete="one-time-code"
+
+                        class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-center text-lg font-mono tracking-widest text-cyan-400 focus:outline-none focus:border-cyan-500 transition shadow-inner">
+
                 </div>
+
                 <div id="mfa-error" class="hidden text-xs text-rose-400 font-mono text-center">Invalid token format. Must be 6 numeric digits.</div>
+
                 <button type="submit" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl transition shadow-lg shadow-emerald-500/20 flex items-center justify-center space-x-2">
+
                     <i data-lucide="key" class="w-4 h-4"></i>
-                    <span>Verify & Authenticate Session</span>
+
+                    <span>Enter Training Demo</span>
+
                 </button>
+
             </form>
 
-            <p class="text-center text-[11px] text-slate-500 font-mono">ODTN Module 5 Protocol • Session-Bounded Auth</p>
+
+
+
         </div>
+
     </div>
 
-    <!-- 3. TOP NAVIGATION HEADER -->
-    <header class="bg-slate-900/90 border-b border-slate-800 sticky top-[41px] z-40 backdrop-blur-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="bg-cyan-500/10 p-2 rounded-xl border border-cyan-500/20 text-cyan-400">
-                    <i data-lucide="shield-alert" class="w-6 h-6"></i>
-                </div>
-                <div>
-                    <h1 class="text-base font-bold tracking-tight text-white flex items-center space-x-2">
-                        <span>ODTN Vancouver</span>
-                        <span class="text-xs font-mono font-normal text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">Mod 5</span>
-                    </h1>
-                    <p class="text-[11px] text-slate-400 hidden sm:block">Lessons That Redefine Cyber Resilience</p>
-                </div>
+
+
+    <!-- TOP NAVIGATION HEADER -->
+
+    <header class="bg-slate-900/80 border-b border-slate-800/80 sticky top-[37px] z-40 backdrop-blur-lg">
+
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="absolute left-[4.25rem] right-[4.25rem] sm:left-20 sm:right-20 lg:left-20 lg:right-[27rem] flex items-center justify-start gap-1 sm:gap-1.5 pointer-events-none min-w-0 overflow-hidden">
+                <span class="shrink-0 bg-cyan-500/10 p-1 sm:p-1.5 rounded-lg border border-cyan-500/20 text-cyan-400 shadow-sm">
+                    <i data-lucide="shield-check" class="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true"></i>
+                </span>
+                <h1 class="min-w-0 whitespace-nowrap text-left text-[8px] sm:text-[10px] md:text-[11px] lg:text-[13px] font-bold tracking-tight text-white leading-none uppercase">ODTN VANCOUVER (OCTOBER 2025) - LESSONS THAT REDEFINE CYBER RESILIENCE</h1>
             </div>
 
-            <!-- Active User Session Badge & Top Right Logout -->
             <div class="flex items-center space-x-3">
-                <div id="session-badge" class="hidden sm:flex items-center space-x-2.5 bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-xl text-xs">
-                    <div class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></div>
+
+                <!-- Far-left Home shortcut -->
+                <button type="button" id="home-shortcut" onclick="switchTab('briefing')" aria-label="Return to Home" title="Return to Home" class="inline-flex shrink-0 items-center justify-center rounded-lg border border-cyan-500/40 bg-cyan-500/10 p-2.5 text-cyan-300 transition hover:bg-cyan-500/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300" aria-current="page">
+                    <i data-lucide="house" class="h-5 w-5" aria-hidden="true"></i><span class="sr-only">Home</span>
+                </button>
+
+                <!-- Centered title is paired with the guard/shield icon below. -->
+
+            </div>
+
+
+
+            <!-- Active User Session Badge & Top Right Controls -->
+
+            <div class="flex items-center space-x-3">
+<div id="session-badge" class="hidden sm:flex items-center space-x-2.5 bg-slate-950/80 border border-slate-800 px-3 py-1.5 rounded-xl text-xs shadow-inner">
+
+                    <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+
                     <div>
+
                         <span id="badge-user" class="font-bold text-slate-200">Commander</span>
-                        <span id="badge-role" class="text-slate-500 block text-[10px]">Incident Commander</span>
+
+                        <span id="badge-role" class="text-slate-400 block text-[10px]">Incident Commander</span>
+
                     </div>
+
                 </div>
+
+
 
                 <!-- Desktop Navigation Tabs -->
+
                 <nav class="hidden lg:flex space-x-1 font-medium text-xs">
-                    <button onclick="switchTab('briefing')" id="nav-briefing" class="px-3 py-2 rounded-lg transition bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">Home</button>
-                    <button onclick="switchTab('simulator')" id="nav-simulator" class="px-3 py-2 rounded-lg transition text-slate-400 hover:text-white">Simulator</button>
-                    <button onclick="switchTab('chat')" id="nav-chat" class="px-3 py-2 rounded-lg transition text-slate-400 hover:text-white">SOC Chat</button>
-                    <button onclick="switchTab('timeline')" id="nav-timeline" class="px-3 py-2 rounded-lg transition text-slate-400 hover:text-white">Timeline</button>
-                    <button onclick="switchTab('submissions')" id="nav-submissions" class="px-3 py-2 rounded-lg transition text-slate-400 hover:text-white">Tickets</button>
-                    <button onclick="switchTab('quiz')" id="nav-quiz" class="px-3 py-2 rounded-lg transition text-slate-400 hover:text-white">Quiz</button>
-                    <button onclick="switchTab('audit')" id="nav-audit" class="px-3 py-2 rounded-lg transition text-slate-400 hover:text-white">Audit</button>
+
+                    <button onclick="switchTab('briefing')" id="nav-briefing" class="px-3 py-2 rounded-lg transition-all bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 font-semibold shadow-sm">Home</button>
+
+                    <button onclick="switchTab('simulator')" id="nav-simulator" class="px-3 py-2 rounded-lg transition-all text-slate-400 hover:text-white hover:bg-slate-800/50">Simulator</button>
+
+                    <button onclick="switchTab('chat')" id="nav-chat" class="px-3 py-2 rounded-lg transition-all text-slate-400 hover:text-white hover:bg-slate-800/50">SOC Chat</button>
+
+                    <button onclick="switchTab('timeline')" id="nav-timeline" class="px-3 py-2 rounded-lg transition-all text-slate-400 hover:text-white hover:bg-slate-800/50">Timeline</button>
+
+                    <button onclick="switchTab('submissions')" id="nav-submissions" class="px-3 py-2 rounded-lg transition-all text-slate-400 hover:text-white hover:bg-slate-800/50">Tickets</button>
+
+                    <button onclick="switchTab('quiz')" id="nav-quiz" class="px-3 py-2 rounded-lg transition-all text-slate-400 hover:text-white hover:bg-slate-800/50">Quiz</button>
+
+                    <button onclick="switchTab('audit')" id="nav-audit" class="px-3 py-2 rounded-lg transition-all text-slate-400 hover:text-white hover:bg-slate-800/50">Audit</button>
+
                 </nav>
 
+
+
                 <!-- Mobile Dropdown Navigation -->
+
                 <div class="lg:hidden">
+
                     <select onchange="switchTab(this.value)" class="bg-slate-950 border border-slate-800 text-xs text-white rounded-lg px-2.5 py-1.5 focus:outline-none" aria-label="Navigate Portal Sections">
+
                         <option value="briefing">1. Home</option>
+
                         <option value="simulator">2. Crisis Simulator</option>
+
                         <option value="chat">3. SOC War Room Chat</option>
+
                         <option value="timeline">4. Incident Timeline</option>
+
                         <option value="submissions">5. Submissions Queue</option>
+
                         <option value="quiz">6. Knowledge Assessment</option>
+
                         <option value="audit">7. Security Audit</option>
+
                     </select>
+
                 </div>
 
-                <!-- Top Right Logout Button -->
+
+
                 <button onclick="triggerLogout()" class="flex items-center space-x-1.5 px-3 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 rounded-xl transition text-xs font-semibold shadow-sm" title="Log Out Session">
+
                     <i data-lucide="log-out" class="w-4 h-4"></i>
+
                     <span class="hidden sm:inline">Logout</span>
+
                 </button>
+
             </div>
+
         </div>
+
     </header>
 
+
+
+    <!-- Compact learning activity shortcuts -->
+    <nav aria-label="Learning activity shortcuts" class="sticky top-[101px] z-30 border-b border-slate-800/80 bg-slate-950/95 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center gap-2 overflow-x-auto">
+            <span class="hidden md:inline shrink-0 pr-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">Activities</span>
+            <button type="button" onclick="switchTab('simulator')" class="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-cyan-500/25 bg-cyan-500/10 px-3 py-1.5 text-xs font-medium text-cyan-200 hover:bg-cyan-500/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"><i data-lucide="workflow" class="h-3.5 w-3.5" aria-hidden="true"></i> Simulators</button>
+            <button type="button" onclick="switchTab('quiz')" class="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-violet-500/25 bg-violet-500/10 px-3 py-1.5 text-xs font-medium text-violet-200 hover:bg-violet-500/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"><i data-lucide="clipboard-check" class="h-3.5 w-3.5" aria-hidden="true"></i> Quizzes</button>
+            <button type="button" onclick="switchTab('timeline')" class="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-200 hover:bg-emerald-500/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"><i data-lucide="list-ordered" class="h-3.5 w-3.5" aria-hidden="true"></i> Timeline</button>
+            <button type="button" onclick="switchTab('chat')" class="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-sky-500/25 bg-sky-500/10 px-3 py-1.5 text-xs font-medium text-sky-200 hover:bg-sky-500/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"><i data-lucide="messages-square" class="h-3.5 w-3.5" aria-hidden="true"></i> SOC Chat</button>
+            <button type="button" onclick="switchTab('submissions')" class="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-amber-500/25 bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-200 hover:bg-amber-500/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"><i data-lucide="ticket-check" class="h-3.5 w-3.5" aria-hidden="true"></i> Tickets</button>
+            <button type="button" onclick="switchTab('audit')" class="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-rose-500/25 bg-rose-500/10 px-3 py-1.5 text-xs font-medium text-rose-200 hover:bg-rose-500/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"><i data-lucide="shield-check" class="h-3.5 w-3.5" aria-hidden="true"></i> Audit</button>
+        </div>
+    </nav>
+
     <!-- MAIN PORTAL CONTAINER -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-        <!-- VIEW 1: HOME (EXECUTIVE BRIEFING) -->
-        <section id="view-briefing" class="space-y-8">
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
-                <div class="absolute right-0 top-0 bottom-0 w-1/3 bg-gradient-to-l from-cyan-500/10 to-transparent pointer-events-none"></div>
-                <div class="max-w-3xl space-y-4">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-                        Executive Scenario Context
-                    </span>
-                    <h2 class="text-3xl font-extrabold text-white tracking-tight sm:text-4xl">
-                        Human Dynamics in High-Stress Cyber Crisis
-                    </h2>
-                    <p class="text-slate-300 text-base sm:text-lg leading-relaxed">
-                        Technical playbooks and firewalls alone cannot protect an organization. ODTN Vancouver Module 5 explores how psychological safety, operational burnout, pre-incident legal retainers (MSAs/NDAs), and non-punitive post-mortems determine true cyber resilience.
+    <main id="main-content" tabindex="-1" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+
+
+        <!-- VIEW 1: HOME / EXECUTIVE BRIEFING -->
+        <section id="view-briefing" class="space-y-6">
+            <div class="rounded-2xl border border-slate-800 bg-slate-900 p-5 sm:p-7">
+                <div class="max-w-4xl space-y-4">
+                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-400">ODTN Vancouver · Module 5</p>
+                    <h2 class="text-3xl sm:text-4xl font-bold tracking-tight leading-tight text-white">Human Dynamics in High-Stress Cyber Crisis</h2>
+                    <p class="max-w-3xl text-sm sm:text-base leading-7 text-slate-300">
+                        Technical playbooks and firewalls alone cannot protect an organization. ODTN Vancouver Module 5 explores how psychological safety, operational burnout, pre-incident legal retainers (MSAs/NDAs), and non-punitive post-mortems determine true organizational resilience.
                     </p>
-                    <div class="pt-2 flex flex-wrap gap-3">
-                        <button onclick="switchTab('simulator')" class="px-5 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl transition shadow-lg shadow-cyan-500/20 flex items-center space-x-2">
-                            <span>Launch Crisis Simulation</span>
-                            <i data-lucide="play" class="w-4 h-4"></i>
-                        </button>
-                        <button onclick="switchTab('chat')" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-xl transition flex items-center space-x-2">
-                            <i data-lucide="message-square" class="w-4 h-4"></i>
-                            <span>Enter SOC War Room</span>
-                        </button>
+                    <div class="flex flex-wrap items-center gap-3 pt-1" aria-label="Start learning activities">
+                        <button type="button" onclick="switchTab('simulator')" class="inline-flex items-center gap-2 rounded-lg border border-cyan-400/40 bg-cyan-500 px-4 py-2.5 text-sm font-semibold text-slate-950 shadow-sm transition hover:bg-cyan-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"><i data-lucide="workflow" class="h-4 w-4" aria-hidden="true"></i> Open crisis simulator</button>
+                        <button type="button" onclick="switchTab('quiz')" class="inline-flex items-center gap-2 rounded-lg border border-violet-400/40 bg-violet-500/10 px-4 py-2.5 text-sm font-semibold text-violet-200 transition hover:bg-violet-500/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-300"><i data-lucide="clipboard-check" class="h-4 w-4" aria-hidden="true"></i> Knowledge quizzes</button>
                     </div>
+
                 </div>
             </div>
 
-            <!-- Key Pillars Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 hover:border-cyan-500/40 transition">
-                    <div class="bg-blue-500/10 text-blue-400 p-3 rounded-xl w-fit mb-4 border border-blue-500/20">
-                        <i data-lucide="brain" class="w-6 h-6"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-white mb-2">Psychological Safety & Rotational Shifts</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">
-                        Continuous 18-hour shifts cause cognitive fatigue, tunnel vision, and catastrophic configuration mistakes. Rotational shifts preserve decision-making capability.
-                    </p>
+            <!-- Core learning themes -->
+            <section aria-labelledby="pillars-title" class="space-y-3">
+                <div><h3 id="pillars-title" class="core-theme-heading text-lg font-bold">Core resilience themes</h3><p class="mt-1 text-sm text-slate-400">Select a topic to open its guidance and key takeaways.</p></div>
+                <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
+                    <button type="button" onclick="openPillarModal('psychological')" class="rounded-xl border border-slate-800 bg-slate-900/70 p-5 text-left transition hover:border-cyan-500/50 hover:bg-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"><span class="mb-3 inline-flex rounded-lg bg-slate-800 p-2.5 text-cyan-400"><i data-lucide="brain" class="h-5 w-5"></i></span><span class="block font-semibold text-white">Psychological safety and shift rotation</span><span class="mt-2 block text-sm leading-6 text-slate-400">Protect decision-making under pressure by using realistic shift lengths, planned breaks, clear handovers, and peer check-ins. Leaders should make it safe to raise concerns early, especially when fatigue or stress could affect response quality.</span><span class="mt-3 block text-sm font-medium text-cyan-400">Read guidance →</span></button>
+                    <button type="button" onclick="openPillarModal('msa')" class="rounded-xl border border-slate-800 bg-slate-900/70 p-5 text-left transition hover:border-cyan-500/50 hover:bg-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"><span class="mb-3 inline-flex rounded-lg bg-slate-800 p-2.5 text-cyan-400"><i data-lucide="scale" class="h-5 w-5"></i></span><span class="block font-semibold text-white">Legal and vendor readiness</span><span class="mt-2 block text-sm leading-6 text-slate-400">Confirm legal and vendor support before a crisis: identify decision-makers, maintain current escalation contacts, and review master services agreements (MSAs), confidentiality terms, and evidence-handling expectations. Early preparation can reduce delays when specialist help is needed.</span><span class="mt-3 block text-sm font-medium text-cyan-400">Read guidance →</span></button>
+                    <button type="button" onclick="openPillarModal('postmortem')" class="rounded-xl border border-slate-800 bg-slate-900/70 p-5 text-left transition hover:border-cyan-500/50 hover:bg-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"><span class="mb-3 inline-flex rounded-lg bg-slate-800 p-2.5 text-cyan-400"><i data-lucide="refresh-cw" class="h-5 w-5"></i></span><span class="block font-semibold text-white">Blameless post-incident reviews</span><span class="mt-2 block text-sm leading-6 text-slate-400">Review what happened without blame, document contributing factors, and distinguish process or technology gaps from individual actions. Assign owners and due dates to corrective actions, then track completion so lessons lead to measurable improvements.</span><span class="mt-3 block text-sm font-medium text-cyan-400">Read guidance →</span></button>
                 </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 hover:border-cyan-500/40 transition">
-                    <div class="bg-amber-500/10 text-amber-400 p-3 rounded-xl w-fit mb-4 border border-amber-500/20">
-                        <i data-lucide="scale" class="w-6 h-6"></i>
+                <div class="resilience-visual rounded-2xl border border-slate-800 bg-slate-950/80 p-5 sm:p-6" role="img" aria-label="Animated illustration of people, legal readiness, and lessons learned connected in a resilient cyber response network">
+                    <div class="flex flex-col items-center gap-5 sm:flex-row sm:justify-between">
+                        <div class="max-w-sm text-center sm:text-left">
+                            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400">Resilience in action</p>
+                            <p class="mt-2 text-lg font-semibold text-white">People. Preparation. Progress.</p>
+                            <p class="mt-1 text-sm leading-6 text-slate-400">A coordinated response connects a supported team, clear legal pathways, and lessons that strengthen the next response.</p>
+                        </div>
+                        <div class="resilience-network" aria-hidden="true">
+                            <span class="network-orbit orbit-one"></span><span class="network-orbit orbit-two"></span>
+                            <span class="network-line line-a"></span><span class="network-line line-b"></span><span class="network-line line-c"></span>
+                            <span class="network-node node-people"><i data-lucide="users"></i><small>People</small></span>
+                            <span class="network-node node-ready"><i data-lucide="shield-check"></i><small>Prepare</small></span>
+                            <span class="network-node node-learn"><i data-lucide="refresh-cw"></i><small>Learn</small></span>
+                            <span class="network-core"><i data-lucide="activity"></i></span>
+                        </div>
                     </div>
-                    <h3 class="text-lg font-bold text-white mb-2">Pre-Incident MSAs & Vendor Readiness</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">
-                        Negotiating contracts during an active breach creates critical delays. Pre-signed Master Services Agreements (MSAs) guarantee rapid external DFIR onboarding.
-                    </p>
                 </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 hover:border-cyan-500/40 transition">
-                    <div class="bg-emerald-500/10 text-emerald-400 p-3 rounded-xl w-fit mb-4 border border-emerald-500/20">
-                        <i data-lucide="refresh-cw" class="w-6 h-6"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-white mb-2">Therapeutic Post-Mortems</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">
-                        Blame-free incident retrospectives treat breaches as system learning opportunities rather than employee disciplinary actions.
-                    </p>
-                </div>
-            </div>
+            </section>
         </section>
+
+
+        <!-- PILLAR DETAIL MODAL / SLIDE-OVER -->
+
+        <div id="pillar-modal" role="dialog" aria-modal="true" aria-labelledby="pm-title" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4 transition-all duration-300">
+
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl space-y-6 relative max-h-[90vh] overflow-y-auto">
+
+
+
+                <button onclick="closePillarModal()" class="absolute top-5 right-5 p-2 bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700 rounded-full transition">
+
+                    <i data-lucide="x" class="w-5 h-5"></i>
+
+                </button>
+
+
+
+                <div class="flex items-center space-x-3">
+
+                    <div id="pm-icon-container" class="p-3 rounded-2xl border"></div>
+
+                    <div>
+
+                        <span id="pm-badge" class="text-[10px] font-mono px-2.5 py-0.5 rounded-full uppercase tracking-wider font-semibold"></span>
+
+                        <h2 id="pm-title" class="text-2xl font-bold text-white mt-1"></h2>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="space-y-4 text-sm leading-relaxed text-slate-300 border-t border-b border-slate-800/80 py-4">
+
+                    <div id="pm-body" class="space-y-4"></div>
+
+                </div>
+
+
+
+                <div id="pm-takeaways" class="bg-slate-950/80 border border-slate-800/80 p-4 rounded-2xl space-y-2">
+
+                    <h4 class="text-xs font-mono text-cyan-400 uppercase font-bold tracking-wider">Key Executive Takeaways</h4>
+
+                    <ul id="pm-list" class="list-disc list-inside text-xs text-slate-300 space-y-1.5"></ul>
+
+                </div>
+
+
+
+                <div class="flex justify-end pt-2">
+
+                    <button onclick="closePillarModal()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl transition">
+
+                        Close Tactical Deep Dive
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
 
         <!-- VIEW 2: MULTI-STAGE CRISIS SIMULATOR -->
+
         <section id="view-simulator" class="hidden space-y-6">
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg">
+
+            <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-lg">
+                <label for="simulator-selector" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Choose a Crisis Simulator</label>
+                <select id="simulator-selector" aria-label="Choose a crisis simulation" onchange="loadSimulator(this.value)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-500">
+                    <option value="ransomware">1. Ransomware Outbreak &amp; Team Fatigue</option>
+                    <option value="exfiltration">2. Data Exfiltration &amp; Privacy Response</option>
+                    <option value="vendor">3. Third-Party Vendor Compromise</option>
+                    <option value="recovery">4. Recovery, Communications &amp; Post-Mortem</option>
+                    <option value="insider">5. Insider Threat &amp; Credential Compromise</option>
+                </select>
+                <p class="text-xs text-slate-500 mt-2">Each scenario contains three decision stages. Your choices change containment, legal readiness, and team morale.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-900/80 border border-slate-800 p-4 rounded-2xl shadow-lg backdrop-blur-md">
+
                 <div>
+
                     <div class="flex justify-between text-xs font-semibold mb-1">
+
                         <span class="text-slate-400">Team Energy & Morale</span>
+
                         <span id="metric-morale" class="text-cyan-400 font-mono">80%</span>
+
                     </div>
+
                     <div class="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-800">
+
                         <div id="bar-morale" class="bg-cyan-500 h-full transition-all duration-500" style="width: 80%"></div>
+
                     </div>
+
                 </div>
+
                 <div>
+
                     <div class="flex justify-between text-xs font-semibold mb-1">
+
                         <span class="text-slate-400">Legal & MSA Preparedness</span>
+
                         <span id="metric-legal" class="text-amber-400 font-mono">50%</span>
+
                     </div>
+
                     <div class="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-800">
+
                         <div id="bar-legal" class="bg-amber-500 h-full transition-all duration-500" style="width: 50%"></div>
+
                     </div>
+
                 </div>
+
                 <div>
+
                     <div class="flex justify-between text-xs font-semibold mb-1">
+
                         <span class="text-slate-400">Incident Containment</span>
+
                         <span id="metric-containment" class="text-emerald-400 font-mono">30%</span>
+
                     </div>
+
                     <div class="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-800">
+
                         <div id="bar-containment" class="bg-emerald-500 h-full transition-all duration-500" style="width: 30%"></div>
+
                     </div>
+
                 </div>
+
             </div>
 
-            <div id="sim-active-card" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
-                <div class="flex items-center justify-between pb-4 border-b border-slate-800">
-                    <span id="sim-stage" class="text-xs font-mono uppercase tracking-widest text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/20">Phase 1 of 3</span>
+
+
+            <div id="sim-active-card" class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
+
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-800 gap-2">
+
+                    <span id="sim-stage" class="text-xs font-mono uppercase tracking-widest text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/20 w-fit">Phase 1 of 3</span>
+
                     <span id="sim-timer" class="text-xs text-slate-400 font-mono">Timestamp: T+00:15 (03:42 AM PST)</span>
+
                 </div>
+
                 <div>
+
                     <h3 id="sim-title" class="text-2xl font-bold text-white mb-3">Zero-Day Ransomware Outbreak</h3>
+
                     <p id="sim-desc" class="text-slate-300 text-base leading-relaxed"></p>
+
                 </div>
+
                 <div id="sim-choices" class="space-y-3"></div>
+
             </div>
 
-            <div id="sim-result" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 text-center space-y-6 shadow-2xl">
+
+
+            <div id="sim-result" class="hidden bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 text-center space-y-6 shadow-2xl">
+
                 <div id="result-icon" class="w-20 h-20 mx-auto rounded-full flex items-center justify-center"></div>
+
                 <div class="space-y-2">
+
                     <h3 id="result-title" class="text-2xl font-bold text-white"></h3>
+
                     <p id="result-desc" class="text-slate-300 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed"></p>
+
                 </div>
-                <button onclick="resetSimulator()" class="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl transition shadow-lg shadow-cyan-500/20 inline-flex items-center space-x-2">
+
+                <button onclick="resetSimulator()" class="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-2xl transition shadow-lg shadow-cyan-500/20 inline-flex items-center space-x-2">
+
                     <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+
                     <span>Restart Crisis Simulation</span>
+
                 </button>
+
             </div>
+
         </section>
+
+
 
         <!-- VIEW 3: SOC WAR ROOM CHAT INTERFACE -->
+
         <section id="view-chat" class="hidden space-y-6">
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl flex flex-col h-[650px]">
-                <div class="flex items-center justify-between pb-4 border-b border-slate-800 mb-4">
+
+            <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-4 sm:p-8 shadow-xl flex flex-col h-[650px] backdrop-blur-md">
+
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-800 mb-4 gap-2">
+
                     <div class="flex items-center space-x-3">
-                        <div class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
+
+                        <div class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse shrink-0"></div>
+
                         <div>
+
                             <h3 class="text-base font-bold text-white">SOC Tactical Command Channel</h3>
-                            <p class="text-xs text-slate-400">Direct encrypted feed with DFIR Lead & Legal Counsel</p>
+
+                            <p class="text-xs text-slate-400">Simulated local feed — no AI service, encryption, or backend connection</p>
+
                         </div>
+
                     </div>
-                    <button onclick="clearChat()" class="text-xs text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg transition font-mono">Clear Feed</button>
+
+                    <button onclick="clearChat()" class="text-xs text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg transition font-mono w-fit">Clear Feed</button>
+
                 </div>
 
-                <div id="chat-feed" class="flex-1 overflow-y-auto space-y-4 pr-2 mb-4 font-sans">
+
+
+                <div id="chat-feed" role="log" aria-live="polite" aria-relevant="additions text" aria-label="SOC training chat messages" class="flex-1 overflow-y-auto space-y-4 pr-2 mb-4 font-sans">
+
                     <div class="flex items-start space-x-3">
+
                         <div class="bg-slate-800 text-slate-300 p-2 rounded-xl font-mono font-bold text-xs shrink-0 border border-slate-700">SOC</div>
+
                         <div class="bg-slate-800/80 border border-slate-700/50 p-3.5 rounded-2xl text-sm text-slate-200 max-w-xl">
+
                             <strong class="text-xs block text-slate-400 mb-0.5">DFIR Lead</strong>
+
                             Commander, host DC-SRV-02 is isolated. Ransom note requests 50 BTC. Awaiting tactical decision on external DFIR retainer deployment.
+
                         </div>
+
                     </div>
+
                 </div>
+
+
 
                 <div class="py-2 border-t border-slate-800 flex flex-wrap gap-2 text-xs">
+
                     <span class="text-slate-500 font-mono text-[11px] self-center mr-1">Quick Directives:</span>
+
                     <button onclick="sendQuickCommand('Isolate Subnet B-4 completely')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">Isolate Subnet B-4</button>
+
                     <button onclick="sendQuickCommand('Activate pre-signed MSA retainer')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">Activate MSA Retainer</button>
+
                     <button onclick="sendQuickCommand('Rotate Tier-1 analysts immediately')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">Rotate Shift Crew</button>
+
                     <button onclick="sendQuickCommand('Brief Executive Board with draft status')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">Brief Board</button>
+
                 </div>
+
+
 
                 <form id="chat-form" onsubmit="handleChatSubmit(event)" class="flex gap-2 pt-2 border-t border-slate-800">
-                    <input type="text" id="chat-input" autocomplete="off" maxlength="280" placeholder="Type tactical directive to SOC team..." 
-                        class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 font-mono transition">
+
+                    <input type="text" id="chat-input" autocomplete="off" maxlength="280" placeholder="Type tactical directive..."&#x20;
+
+                        class="flex-1 bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 font-mono transition">
+
                     <button type="submit" class="px-5 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl transition shadow-lg shadow-cyan-500/20 flex items-center space-x-2 shrink-0">
+
                         <span>Send</span>
+
                         <i data-lucide="send" class="w-4 h-4"></i>
+
                     </button>
+
                 </form>
+
             </div>
+
         </section>
+
+
 
         <!-- VIEW 4: INCIDENT TIMELINE -->
+
         <section id="view-timeline" class="hidden space-y-6">
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl max-w-4xl mx-auto space-y-6">
+
+            <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl max-w-4xl mx-auto space-y-6 backdrop-blur-md">
+
                 <div class="pb-4 border-b border-slate-800">
+
                     <span class="text-xs font-mono uppercase tracking-widest text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/20">Chronological Event Map</span>
+
                     <h2 class="text-2xl font-bold text-white mt-2">ODTN Vancouver Module 5 Incident Sequence</h2>
+
                     <p class="text-xs text-slate-400 mt-1">Click any timeline node to inspect forensic telemetry, indicators of compromise (IoCs), and leadership decisions.</p>
+
                 </div>
+
+
 
                 <div class="border-l-2 border-cyan-500/30 pl-6 space-y-8 ml-2">
+
                     <div class="relative group cursor-pointer" onclick="toggleTimelineDetails('tl-1')">
+
                         <div class="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-cyan-500 border-4 border-slate-900 group-hover:scale-125 transition"></div>
+
                         <span class="text-xs font-mono text-cyan-400">T-00:00 • 03:42 AM PST</span>
+
                         <h3 class="text-base font-bold text-white group-hover:text-cyan-400 transition">Outbreak Detection & Endpoint Isolation</h3>
+
                         <p class="text-xs text-slate-400 mt-1">EDR flags unauthorized PowerShell invocations and shadow copy deletion.</p>
-                        
-                        <div id="tl-1" class="hidden mt-3 p-4 bg-slate-950 border border-slate-800 rounded-xl text-xs space-y-2">
+
+
+
+                        <div id="tl-1" class="hidden mt-3 p-4 bg-slate-950 border border-slate-800 rounded-2xl text-xs space-y-2">
+
                             <p class="text-slate-300"><strong>Forensic Detail:</strong> Process <code>powershell.exe -enc vssadmin delete shadows /all /quiet</code> executed on DC-SRV-02.</p>
+
                             <p class="text-amber-400"><strong>IoC SHA-256:</strong> <code>e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</code></p>
+
                         </div>
+
                     </div>
+
+
 
                     <div class="relative group cursor-pointer" onclick="toggleTimelineDetails('tl-2')">
+
                         <div class="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-amber-500 border-4 border-slate-900 group-hover:scale-125 transition"></div>
+
                         <span class="text-xs font-mono text-amber-400">T+03:30 • 07:12 AM PST</span>
+
                         <h3 class="text-base font-bold text-white group-hover:text-amber-400 transition">Pre-Signed MSA Activation & DFIR Onboarding</h3>
+
                         <p class="text-xs text-slate-400 mt-1">External incident response team onboarded within 20 minutes thanks to pre-negotiated MSAs/NDAs.</p>
-                        
-                        <div id="tl-2" class="hidden mt-3 p-4 bg-slate-950 border border-slate-800 rounded-xl text-xs space-y-2">
+
+
+
+                        <div id="tl-2" class="hidden mt-3 p-4 bg-slate-950 border border-slate-800 rounded-2xl text-xs space-y-2">
+
                             <p class="text-slate-300"><strong>Resilience Metric:</strong> Avoided 8-hour legal SLA delay compared to non-prepared organizations.</p>
+
                         </div>
+
                     </div>
+
+
 
                     <div class="relative group cursor-pointer" onclick="toggleTimelineDetails('tl-3')">
+
                         <div class="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-blue-500 border-4 border-slate-900 group-hover:scale-125 transition"></div>
+
                         <span class="text-xs font-mono text-blue-400">T+08:00 • 11:42 AM PST</span>
+
                         <h3 class="text-base font-bold text-white group-hover:text-blue-400 transition">Rotational Shift-Change & Burnout Mitigation</h3>
+
                         <p class="text-xs text-slate-400 mt-1">Tier-1 responders mandatory off-duty handover enforced by Commander to preserve mental sharpness.</p>
-                        
-                        <div id="tl-3" class="hidden mt-3 p-4 bg-slate-950 border border-slate-800 rounded-xl text-xs space-y-2">
+
+
+
+                        <div id="tl-3" class="hidden mt-3 p-4 bg-slate-950 border border-slate-800 rounded-2xl text-xs space-y-2">
+
                             <p class="text-slate-300"><strong>Human Factor:</strong> Rested secondary shift caught misconfigured firewall rule created during fatigue hour 12.</p>
+
                         </div>
+
                     </div>
+
+
 
                     <div class="relative group cursor-pointer" onclick="toggleTimelineDetails('tl-4')">
+
                         <div class="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-emerald-500 border-4 border-slate-900 group-hover:scale-125 transition"></div>
-                        <span class="text-xs font-mono text-emerald-400">T+24:00 • Next Day 03:42 AM PST</span>
+
+                        <span class="text-xs font-mono text-emerald-400">T+24:00 - Next Day 03:42 AM PST</span>
+
                         <h3 class="text-base font-bold text-white group-hover:text-emerald-400 transition">Blame-Free Retrospective & Therapeutic Post-Mortem</h3>
+
                         <p class="text-xs text-slate-400 mt-1">Incident officially contained. Continuous learning debrief conducted.</p>
-                        
-                        <div id="tl-4" class="hidden mt-3 p-4 bg-slate-950 border border-slate-800 rounded-xl text-xs space-y-2">
+
+
+
+                        <div id="tl-4" class="hidden mt-3 p-4 bg-slate-950 border border-slate-800 rounded-2xl text-xs space-y-2">
+
                             <p class="text-slate-300"><strong>Post-Mortem Goal:</strong> Hardened active directory trust policies and updated MSA legal contacts list.</p>
+
                         </div>
+
                     </div>
+
                 </div>
+
             </div>
+
         </section>
+
+
 
         <!-- VIEW 5: USER SUBMISSIONS QUEUE -->
+
         <section id="view-submissions" class="hidden space-y-6">
+
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
-                    <h3 class="text-lg font-bold text-white border-b border-slate-800 pb-3">Submit Incident Report</h3>
+
+                <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4 backdrop-blur-md">
+
+                    <h3 class="text-lg font-bold text-white border-b border-slate-800 pb-3">Submit Incident Ticket</h3>
+
                     <form id="ticket-form" onsubmit="handleTicketSubmit(event)" class="space-y-4 text-xs">
+
                         <div>
+
                             <label class="block font-semibold text-slate-400 mb-1" for="ticket-author">REPORTER NAME</label>
-                            <input type="text" id="ticket-author" required maxlength="50" placeholder="Edmund Eneude" 
+
+                            <input type="text" id="ticket-author" required maxlength="50" placeholder="Edmund Eneude"&#x20;
+
                                 class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-cyan-500">
+
                         </div>
+
                         <div>
+
                             <label class="block font-semibold text-slate-400 mb-1" for="ticket-asset">TARGET ASSET / IP</label>
-                            <input type="text" id="ticket-asset" required maxlength="50" placeholder="10.0.4.12 / DC-SRV-02" 
+
+                            <input type="text" id="ticket-asset" required maxlength="50" placeholder="10.0.4.12 / DC-SRV-02"&#x20;
+
                                 class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-cyan-500">
+
                         </div>
+
                         <div>
+
                             <label class="block font-semibold text-slate-400 mb-1" for="ticket-severity">SEVERITY LEVEL</label>
+
                             <select id="ticket-severity" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-cyan-500">
+
                                 <option value="Critical">Critical (P0 - Immediate Outbreak)</option>
+
                                 <option value="High">High (P1 - Unverified Exploitation)</option>
+
                                 <option value="Medium">Medium (P2 - Policy Breach)</option>
+
                             </select>
+
                         </div>
+
                         <div>
-                            <label class="block font-semibold text-slate-400 mb-1" for="ticket-notes">DETAILED OBSERVATION</label>
-                            <textarea id="ticket-notes" required maxlength="300" rows="3" placeholder="Describe anomaly or human factor observation..." 
-                                class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-cyan-500"></textarea>
+
+                            <label class="block font-semibold text-slate-400 mb-1" for="ticket-desc">OBSERVED BEHAVIOR / LOGS</label>
+
+                            <textarea id="ticket-desc" required maxlength="1000" rows="3" placeholder="Describe anomalous events..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-slate-200 focus:outline-none focus:border-cyan-500"></textarea>
+
                         </div>
+
                         <button type="submit" class="w-full py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl transition shadow-lg shadow-cyan-500/20">
-                            Submit Ticket to Queue
+
+                            Log Incident Ticket
+
                         </button>
+
                     </form>
+
                 </div>
 
-                <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
-                        <h3 class="text-lg font-bold text-white">Active Incident Queue</h3>
-                        <div class="flex items-center space-x-2 text-xs">
-                            <span class="text-slate-400">Filter:</span>
-                            <button onclick="filterTickets('All')" id="filter-all" class="px-2.5 py-1 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 transition">All</button>
-                            <button onclick="filterTickets('Critical')" id="filter-critical" class="px-2.5 py-1 rounded bg-slate-800 text-slate-400 hover:text-white transition">Critical</button>
-                            <button onclick="filterTickets('High')" id="filter-high" class="px-2.5 py-1 rounded bg-slate-800 text-slate-400 hover:text-white transition">High</button>
-                        </div>
+
+
+                <div class="lg:col-span-2 bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4 backdrop-blur-md">
+
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+
+                        <h3 class="text-lg font-bold text-white">Active Ticket Queue</h3>
+
+                        <span id="ticket-count" class="text-xs font-mono text-cyan-400 bg-cyan-500/10 px-2.5 py-1 rounded-full border border-cyan-500/20">2 Tickets Enqueued</span>
+
                     </div>
-                    <div id="tickets-container" class="space-y-3 max-h-[420px] overflow-y-auto pr-1"></div>
+
+                    <div id="ticket-list" class="space-y-3">
+
+                        <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl flex flex-col sm:flex-row justify-between gap-2">
+
+                            <div>
+
+                                <div class="flex items-center space-x-2">
+
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30 uppercase">Critical</span>
+
+                                    <h4 class="text-sm font-bold text-white">DC-SRV-02 Ransomware Encryptor Process</h4>
+
+                                </div>
+
+                                <p class="text-xs text-slate-400 mt-1">Reporter: Operator Lead • Asset: 10.0.4.12</p>
+
+                            </div>
+
+                            <span class="text-[11px] font-mono text-slate-500 shrink-0">Logged: 03:45 AM</span>
+
+                        </div>
+
+                    </div>
+
                 </div>
+
             </div>
+
         </section>
 
-        <!-- VIEW 6: KNOWLEDGE ASSESSMENT QUIZ -->
+
+
+                <!-- VIEW 6: KNOWLEDGE ASSESSMENT (QUIZ) -->
         <section id="view-quiz" class="hidden space-y-6">
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl max-w-3xl mx-auto space-y-6">
-                <div class="pb-4 border-b border-slate-800 flex items-center justify-between">
-                    <div>
-                        <span class="text-xs font-mono uppercase tracking-widest text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/20">Module 5 Assessment</span>
-                        <h2 class="text-2xl font-bold text-white mt-2">Crisis Management & Human Dynamics Quiz</h2>
-                    </div>
-                    <span id="quiz-progress" class="text-xs font-mono text-slate-400">Question 1 of 3</span>
+            <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl max-w-3xl mx-auto space-y-6 backdrop-blur-md">
+                <div class="border-b border-slate-800 pb-4">
+                    <span class="text-xs font-mono uppercase tracking-widest text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/20">Assessment Engine</span>
+                    <h2 class="text-2xl font-bold text-white mt-2">Module 5 Resilience Knowledge Check</h2>
+                    <p class="text-xs text-slate-400 mt-1">Test your knowledge of human factors, legal readiness, incident response, and blameless post-mortems.</p>
                 </div>
-
-                <div id="quiz-card" class="space-y-4">
-                    <p id="quiz-question" class="text-base font-semibold text-slate-200"></p>
-                    <div id="quiz-options" class="space-y-3"></div>
+                <div class="space-y-3">
+                    <label for="quiz-selector" class="block text-xs font-bold uppercase tracking-wider text-cyan-400">Choose a quiz</label>
+                    <select id="quiz-selector" onchange="renderQuiz()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white">
+                        <option value="human">Quiz 1: Human Factors & Shift Management</option>
+                        <option value="legal">Quiz 2: Legal Readiness & Vendor Retainers</option>
+                        <option value="response">Quiz 3: Incident Response & Post-Mortems</option>
+                    </select>
                 </div>
-
-                <div id="quiz-result-card" class="hidden text-center space-y-4">
-                    <div class="w-16 h-16 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">✓</div>
-                    <h3 class="text-2xl font-bold text-white">Assessment Complete</h3>
-                    <p id="quiz-score-text" class="text-slate-300 text-sm"></p>
-                    <button onclick="resetQuiz()" class="px-6 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl transition text-xs">Retake Quiz</button>
-                </div>
+                <form id="quiz-container" class="space-y-6" onsubmit="submitQuiz(event)"></form>
+                <div id="quiz-results" role="status" aria-live="polite" class="hidden p-4 bg-slate-950 border border-slate-800 rounded-2xl text-sm text-center space-y-3"></div>
+                <button id="quiz-retry" type="button" onclick="renderQuiz()" class="hidden px-5 py-3 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-xl">Try Again</button>
             </div>
         </section>
 
-        <!-- VIEW 7: SECURITY AUDIT CHECKLIST -->
+<!-- VIEW 7: SECURITY AUDIT -->
+
         <section id="view-audit" class="hidden space-y-6">
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl max-w-4xl mx-auto space-y-6">
-                <div class="pb-4 border-b border-slate-800 flex items-center justify-between">
+
+            <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl max-w-4xl mx-auto space-y-6 backdrop-blur-md">
+
+                <div class="border-b border-slate-800 pb-4 flex justify-between items-center">
+
                     <div>
-                        <span class="text-xs font-mono uppercase tracking-widest text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/20">Resilience Checklist</span>
-                        <h2 class="text-2xl font-bold text-white mt-2">Executive Audit & Preparedness Matrix</h2>
+
+                        <span class="text-xs font-mono uppercase tracking-widest text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/20">Immutable Trail</span>
+
+                        <h2 class="text-2xl font-bold text-white mt-2">Security & Operational Demo Audit Log</h2>
+
                     </div>
-                    <span id="audit-score" class="text-xs font-mono bg-cyan-500/10 text-cyan-400 px-3 py-1.5 rounded-lg border border-cyan-500/20">0 / 4 Completed</span>
+
+                    <button onclick="exportAuditLog()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs rounded-xl transition font-mono border border-slate-700">Export CSV</button>
+
                 </div>
 
-                <div class="space-y-3" id="audit-checklist">
-                    <label class="flex items-start space-x-3 p-4 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:border-cyan-500/40 transition">
-                        <input type="checkbox" onchange="updateAuditProgress()" class="mt-1 w-4 h-4 rounded bg-slate-900 border-slate-700 text-cyan-500 focus:ring-cyan-500">
-                        <div class="text-xs space-y-1">
-                            <strong class="text-white text-sm">Pre-Signed Master Services Agreements (MSAs)</strong>
-                            <p class="text-slate-400">External DFIR retainer contracts pre-approved by legal counsel to ensure instant emergency response onboarding.</p>
-                        </div>
-                    </label>
-                    <label class="flex items-start space-x-3 p-4 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:border-cyan-500/40 transition">
-                        <input type="checkbox" onchange="updateAuditProgress()" class="mt-1 w-4 h-4 rounded bg-slate-900 border-slate-700 text-cyan-500 focus:ring-cyan-500">
-                        <div class="text-xs space-y-1">
-                            <strong class="text-white text-sm">Mandatory Rotational Shift Schedules</strong>
-                            <p class="text-slate-400">Strict off-duty handover enforcement after 8-12 hours to prevent cognitive fatigue and tunnel vision.</p>
-                        </div>
-                    </label>
-                    <label class="flex items-start space-x-3 p-4 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:border-cyan-500/40 transition">
-                        <input type="checkbox" onchange="updateAuditProgress()" class="mt-1 w-4 h-4 rounded bg-slate-900 border-slate-700 text-cyan-500 focus:ring-cyan-500">
-                        <div class="text-xs space-y-1">
-                            <strong class="text-white text-sm">Psychological Safety & Blame-Free Retrospectives</strong>
-                            <p class="text-slate-400">Post-mortems framed around systemic gap analysis rather than employee punishment or finger-pointing.</p>
-                        </div>
-                    </label>
-                    <label class="flex items-start space-x-3 p-4 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:border-cyan-500/40 transition">
-                        <input type="checkbox" onchange="updateAuditProgress()" class="mt-1 w-4 h-4 rounded bg-slate-900 border-slate-700 text-cyan-500 focus:ring-cyan-500">
-                        <div class="text-xs space-y-1">
-                            <strong class="text-white text-sm">Isolated Out-of-Band Communications Channel</strong>
-                            <p class="text-slate-400">Encrypted war room channels independent of primary corporate Active Directory infrastructure.</p>
-                        </div>
-                    </label>
+
+
+                <div class="overflow-x-auto">
+
+                    <table class="w-full text-left text-xs font-mono">
+
+                        <thead class="bg-slate-950 text-slate-400 border-b border-slate-800">
+
+                            <tr>
+
+                                <th class="p-3">TIMESTAMP</th>
+
+                                <th class="p-3">ACTOR ID</th>
+
+                                <th class="p-3">ACTION</th>
+
+                                <th class="p-3">STATUS</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="audit-table-body" class="divide-y divide-slate-800/60 text-slate-300">
+
+                            <tr>
+
+                                <td class="p-3 text-slate-500">03:42:11 PST</td>
+
+                                <td class="p-3">SYSTEM_EDR</td>
+
+                                <td class="p-3">LockBit Ransomware Alert Triggered</td>
+
+                                <td class="p-3 text-amber-400">UNRESOLVED</td>
+
+                            </tr>
+
+                            <tr>
+
+                                <td class="p-3 text-slate-500">03:45:00 PST</td>
+
+                                <td class="p-3">operator@odtn-vancouver.ca</td>
+
+                                <td class="p-3">Demo Gate Completed (Role: Incident Commander)</td>
+
+                                <td class="p-3 text-emerald-400">SUCCESS</td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
                 </div>
+
             </div>
+
         </section>
+
+
+
     </main>
 
-    <!-- FOOTER -->
-    <footer class="bg-slate-900/50 border-t border-slate-800 py-6 text-center text-xs text-slate-500 font-mono">
-        ODTN Vancouver Module 5 • Human Dynamics & Cyber Incident Command Portal © 2026
-    </footer>
+
 
     <!-- TELEMETRY MODAL -->
-    <div id="telemetry-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-                <h3 class="text-base font-bold text-white flex items-center space-x-2">
-                    <i data-lucide="terminal" class="w-5 h-5 text-cyan-400"></i>
-                    <span>EDR Payload Telemetry Inspection</span>
+
+    <div id="telemetry-modal" role="dialog" aria-modal="true" aria-labelledby="telemetry-modal-title" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-4">
+
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+
+                <h3 id="telemetry-modal-title" class="text-base font-bold text-white flex items-center gap-2">
+
+                    <i data-lucide="terminal" class="w-5 h-5 text-amber-400"></i> Forensic Telemetry Inspector
+
                 </h3>
-                <button onclick="closeTelemetryModal()" class="text-slate-400 hover:text-white text-lg font-bold" aria-label="Close telemetry modal">&times;</button>
+
+                <button onclick="closeTelemetryModal()" class="text-slate-400 hover:text-white">&times;</button>
+
             </div>
-            <div class="bg-slate-950 p-4 rounded-xl font-mono text-xs text-cyan-300 space-y-2 border border-slate-800/80 overflow-x-auto">
-                <p class="text-slate-400"># Process Tree Inspection (DC-SRV-02)</p>
-                <p>Parent: <span class="text-white">C:\Windows\System32\wbem\WmiPrvSE.exe</span></p>
-                <p>Target: <span class="text-rose-400">C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe</span></p>
-                <p>Arguments: <span class="text-amber-300">-enc VwBzAHMAYQBkAG0AZQBuACAAZABlAGwAZQB0AGUAIABzAGgAYQBkAG8AdwBzACAALwBhAGwAbAA=</span></p>
+
+            <div class="bg-slate-950 p-4 rounded-2xl font-mono text-xs text-amber-300 space-y-2 border border-slate-800 overflow-x-auto">
+
+                <p>> HOST: DC-SRV-02.ODTN.LOCAL</p>
+
+                <p>> PID: 4892 (powershell.exe)</p>
+
+                <p>> CMD: powershell.exe -e -enc vssadmin delete shadows /all /quiet</p>
+
+                <p>> SHA256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</p>
+
+                <p>> NETWORK: Attempted egress to 185.220.101.5:443 [BLOCKED]</p>
+
             </div>
-            <div class="flex justify-end pt-2">
-                <button onclick="closeTelemetryModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs rounded-xl font-semibold transition">Close Modal</button>
+
+            <div class="flex justify-end">
+
+                <button onclick="closeTelemetryModal()" class="px-4 py-2 bg-slate-800 text-slate-200 text-xs rounded-xl hover:bg-slate-700">Close Telemetry</button>
+
             </div>
+
         </div>
+
     </div>
 
-    <!-- JAVASCRIPT CONTROLLER -->
+
+
+    <!-- FOOTER -->
+
+    <footer class="bg-slate-950 border-t border-slate-900 py-6 mt-12 text-center text-xs text-slate-600 font-mono">
+
+        <p>ODTN Vancouver Module 5 • Human Dynamics & Cyber Incident Command Portal © 2026</p>
+        <p class="mt-2 text-slate-500">Timezone: Mountain Time (MST/MDT)</p>
+
+    </footer>
+
+
+
+    <!-- INTERACTIVE SCRIPT LOGIC -->
+
     <script>
-        lucide.createIcons();
 
-        // DOM Sanitizer function (Mitigates DOM-based XSS)
-        function escapeHTML(str) {
-            if (!str) return '';
-            return String(str)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
+        // Portal timezone: local Mountain Time, including daylight-saving changes.
+        // America/Edmonton follows Calgary's standard/daylight time transitions.
+        const PORTAL_TIME_ZONE = 'America/Edmonton';
+        function formatPortalDateTime(date = new Date()) {
+            return new Intl.DateTimeFormat('en-CA', {
+                timeZone: PORTAL_TIME_ZONE,
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit', second: '2-digit',
+                hour12: false, timeZoneName: 'short'
+            }).format(date);
         }
 
-        // Session State & Initialization
-        window.addEventListener('DOMContentLoaded', () => {
-            const activeSession = sessionStorage.getItem('odtn_session_active');
-            if (activeSession === 'true') {
-                document.getElementById('login-overlay').classList.add('hidden');
-                document.getElementById('badge-user').innerText = escapeHTML(sessionStorage.getItem('odtn_user') || 'Commander');
-                document.getElementById('badge-role').innerText = escapeHTML(sessionStorage.getItem('odtn_role') || 'Incident Commander');
+        // Init Lucide Icons
+
+        if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
+
+
+
+        // Pillar Details Data
+
+        const pillarData = {
+
+            psychological: {
+
+                title: "Psychological Safety & Rotational Shifts",
+
+                badge: "Human Factors & Resilience",
+
+                badgeClass: "bg-blue-500/20 text-blue-400 border border-blue-500/40",
+
+                iconContainerClass: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+
+                icon: "brain",
+
+                body: `
+
+                    <p>During high-severity cyber attacks, incident response teams often endure intense cognitive loads. Forcing analysts to work past 8 to 12 consecutive hours leads to tunnel vision, severe fatigue, and an exponential increase in critical execution errors (such as misconfigured firewall rules or accidental deletion of forensic evidence).</p>
+
+                    <p>Establishing psychological safety allows team members to report early signs of exhaustion, mistakes, or unverified assumptions without fear of reprisal or blame.</p>
+
+                `,
+
+                takeaways: [
+
+                    "Enforce strict 8-hour maximum active command rotations during major incidents.",
+
+                    "Assign shadow leads to smoothly transition context during shift turnovers.",
+
+                    "Establish a mandatory 'no-penalty' policy for reporting fatigue-induced mistakes early."
+
+                ]
+
+            },
+
+            msa: {
+
+                title: "Pre-Incident MSAs & Vendor Readiness",
+
+                badge: "Legal & Strategic Preparedness",
+
+                badgeClass: "bg-amber-500/20 text-amber-400 border border-amber-500/40",
+
+                iconContainerClass: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+
+                icon: "scale",
+
+                body: `
+
+                    <p>When an enterprise experiences an active ransomware or exfiltration breach, every minute lost negotiating Master Services Agreements (MSAs), Non-Disclosure Agreements (NDAs), or retainer rates extends the adversary's dwell time.</p>
+
+                    <p>Pre-negotiated legal retainers with external Digital Forensics and Incident Response (DFIR) specialists ensure that experts can be onboarded within minutes rather than days.</p>
+
+                `,
+
+                takeaways: [
+
+                    "Pre-sign MSAs and NDAs with at least two accredited external DFIR vendors.",
+
+                    "Pre-authorize hourly emergency spending limits to prevent procurement holds.",
+
+                    "Maintain out-of-band contact channels and cryptographically verified key exchanges for vendor lead."
+
+                ]
+
+            },
+
+            postmortem: {
+
+                title: "Therapeutic Post-Mortems",
+
+                badge: "Continuous Systemic Learning",
+
+                badgeClass: "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40",
+
+                iconContainerClass: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+
+                icon: "refresh-cw",
+
+                body: `
+
+                    <p>Traditional incident debriefs often devolve into finger-pointing and scapegoating, which encourages staff to conceal vulnerabilities or mistake origins during future events. Therapeutic, blameless post-mortems assume that personnel acted in good faith with the information available to them at the time.</p>
+
+                    <p>Focusing on systemic failures rather than individual errors produces actionable improvements for technical controls and operational procedures.</p>
+
+                `,
+
+                takeaways: [
+
+                    "Focus retrospective questions on 'How did the system allow this?' rather than 'Who caused this?'",
+
+                    "Document precise timelines and cognitive states during key decisions.",
+
+                    "Translate lessons learned directly into automated guardrails and playbook updates."
+
+                ]
+
             }
-        });
 
-        // Scroll Control Listener
-        window.addEventListener('scroll', () => {
-            const scroller = document.getElementById('scroll-controls');
-            if (window.scrollY > 250) {
-                scroller.classList.remove('opacity-0', 'pointer-events-none');
-            } else {
-                scroller.classList.add('opacity-0', 'pointer-events-none');
+        };
+
+
+
+        // Modal Functions
+
+        function openPillarModal(pillarKey) {
+
+            const data = pillarData[pillarKey];
+
+            if (!data) return;
+
+
+
+            document.getElementById('pm-title').innerText = data.title;
+
+
+
+            const badge = document.getElementById('pm-badge');
+
+            badge.innerText = data.badge;
+
+            badge.className = `text-[10px] font-mono px-2.5 py-0.5 rounded-full uppercase tracking-wider font-semibold ${data.badgeClass}`;
+
+
+
+            const iconBox = document.getElementById('pm-icon-container');
+
+            iconBox.className = `p-3 rounded-2xl border ${data.iconContainerClass}`;
+
+            iconBox.innerHTML = `<i data-lucide="${data.icon}" class="w-6 h-6"></i>`;
+
+
+
+            document.getElementById('pm-body').innerHTML = data.body;
+
+
+
+            const list = document.getElementById('pm-list');
+
+            list.innerHTML = data.takeaways.map(t => `<li class="flex items-start gap-2"><span>•</span> <span>${t}</span></li>`).join('');
+
+
+
+            const modal = document.getElementById('pillar-modal');
+
+            modal.classList.remove('hidden');
+
+            if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
+
+        }
+
+
+
+        function closePillarModal() {
+
+            document.getElementById('pillar-modal').classList.add('hidden');
+
+        }
+
+
+
+        // Safe text interpolation for user-entered content in training feeds and tickets.
+        function escapeHTML(value) {
+            return String(value ?? '').replace(/[&<>"']/g, ch => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            })[ch]);
+        }
+
+        // Navigation Switching: synchronize desktop and mobile navigation and expose current page.
+        function switchTab(tabId) {
+            const views = ['briefing', 'simulator', 'chat', 'timeline', 'submissions', 'quiz', 'audit'];
+            if (!views.includes(tabId)) return;
+
+            views.forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                if (el) el.classList.toggle('hidden', v !== tabId);
+
+                const navBtn = document.getElementById(`nav-${v}`);
+                if (navBtn) {
+                    navBtn.className = v === tabId
+                        ? 'px-3 py-2 rounded-lg transition-all bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 font-semibold shadow-sm'
+                        : 'px-3 py-2 rounded-lg transition-all text-slate-400 hover:text-white hover:bg-slate-800/50';
+                    if (v === tabId) navBtn.setAttribute('aria-current', 'page');
+                    else navBtn.removeAttribute('aria-current');
+                }
+            });
+
+            const mobileNav = document.querySelector('select[aria-label="Navigate Portal Sections"]');
+            if (mobileNav) mobileNav.value = tabId;
+            const homeShortcut = document.getElementById('home-shortcut');
+            if (homeShortcut) {
+                if (tabId === 'briefing') homeShortcut.setAttribute('aria-current', 'page');
+                else homeShortcut.removeAttribute('aria-current');
             }
-        });
-
-        function scrollToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            const main = document.getElementById('main-content');
+            if (main && window.matchMedia('(max-width: 1023px)').matches) {
+                main.focus({ preventScroll: true });
+            }
         }
 
-        function scrollToBottom() {
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-        }
 
-        // Authentication Flow
+
+        // Login Step Handlers
+
+        const allowedDemoRoles = new Set([
+            'Incident Commander', 'Lead DFIR Analyst', 'Legal Counsel', 'Security Auditor'
+        ]);
+
         function handleLoginStep1(e) {
             e.preventDefault();
+            const form = document.getElementById('form-login-step1');
+            const emailInput = document.getElementById('login-user');
+            const roleInput = document.getElementById('login-role');
+            const email = emailInput.value.trim();
+            if (!form.reportValidity() || email.length > 64 || !allowedDemoRoles.has(roleInput.value)) return;
+            emailInput.value = email;
             document.getElementById('form-login-step1').classList.add('hidden');
             document.getElementById('form-login-mfa').classList.remove('hidden');
+            document.getElementById('mfa-token').focus();
         }
 
         function handleMfaSubmit(e) {
             e.preventDefault();
-            const tokenInput = document.getElementById('mfa-token').value.trim();
-            const errDiv = document.getElementById('mfa-error');
-
-            if (!/^\d{6}$/.test(tokenInput)) {
-                errDiv.classList.remove('hidden');
+            const form = document.getElementById('form-login-mfa');
+            const tokenInput = document.getElementById('mfa-token');
+            const token = tokenInput.value.trim();
+            const error = document.getElementById('mfa-error');
+            if (!form.reportValidity() || !/^\d{6}$/.test(token)) {
+                error.textContent = 'Enter exactly six numeric digits for this training demo.';
+                error.classList.remove('hidden');
+                tokenInput.focus();
                 return;
             }
-            errDiv.classList.add('hidden');
-
-            const rawUser = document.getElementById('login-user').value.trim();
-            const rawRole = document.getElementById('login-role').value;
-            const cleanUser = rawUser.split('@')[0] || 'Commander';
-
-            sessionStorage.setItem('odtn_session_active', 'true');
-            sessionStorage.setItem('odtn_user', cleanUser);
-            sessionStorage.setItem('odtn_role', rawRole);
-
-            document.getElementById('badge-user').innerText = escapeHTML(cleanUser);
-            document.getElementById('badge-role').innerText = escapeHTML(rawRole);
+            // Deliberately a demo gate only. Never treat this client-side state as identity or authorization.
+            error.classList.add('hidden');
+            const email = document.getElementById('login-user').value.trim();
+            const role = document.getElementById('login-role').value;
+            document.getElementById('badge-user').textContent = email || 'Training Operator';
+            document.getElementById('badge-role').textContent = role + ' · Demo only';
             document.getElementById('login-overlay').classList.add('hidden');
+            document.getElementById('session-badge').classList.remove('hidden');
+            document.getElementById('session-badge').classList.add('flex');
+            tokenInput.value = '';
         }
+
+
 
         function triggerLogout() {
-            sessionStorage.removeItem('odtn_session_active');
-            sessionStorage.removeItem('odtn_user');
-            sessionStorage.removeItem('odtn_role');
-
-            document.getElementById('mfa-token').value = '849201';
-            document.getElementById('form-login-mfa').classList.add('hidden');
-            document.getElementById('form-login-step1').classList.remove('hidden');
             document.getElementById('login-overlay').classList.remove('hidden');
+            document.getElementById('form-login-step1').classList.remove('hidden');
+            document.getElementById('form-login-mfa').classList.add('hidden');
+            document.getElementById('session-badge').classList.add('hidden');
+            document.getElementById('session-badge').classList.remove('flex');
+            document.getElementById('mfa-token').value = '';
+            document.getElementById('mfa-error').classList.add('hidden');
         }
 
-        // Tab Navigation Controller
-        const views = ['briefing', 'simulator', 'chat', 'timeline', 'submissions', 'quiz', 'audit'];
-        function switchTab(viewId) {
-            views.forEach(v => {
-                const el = document.getElementById(`view-${v}`);
-                if (el) el.classList.add('hidden');
-                const navBtn = document.getElementById(`nav-${v}`);
-                if (navBtn) {
-                    navBtn.className = "px-3 py-2 rounded-lg transition text-slate-400 hover:text-white";
-                }
-            });
-            const target = document.getElementById(`view-${viewId}`);
-            if (target) target.classList.remove('hidden');
-            const activeNav = document.getElementById(`nav-${viewId}`);
-            if (activeNav) {
-                activeNav.className = "px-3 py-2 rounded-lg transition bg-cyan-500/10 text-cyan-400 border border-cyan-500/30";
-            }
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
 
-        // Alert Banner Ticker
+
+        // Alert Ticker Logic
+
         const alerts = [
+
             "[03:42:11 PST] LockBit ransomware payload execution detected on Host DC-SRV-02 (VLAN 104).",
-            "[04:15:00 PST] Unauthorized privilege escalation attempt blocked on Domain Controller AD-01.",
-            "[05:22:40 PST] External legal counsel notified; pre-signed MSA retainer activation pending."
+
+            "[03:48:02 PST] Suspicious outbound TLS connection to 185.220.101.5 flagged by egress proxy.",
+
+            "[04:10:15 PST] Emergency rotation initiated for Tier-1 SOC analysts on shift duty."
+
         ];
+
         let alertIdx = 0;
+
+
+
         function cycleAlert() {
+
             alertIdx = (alertIdx + 1) % alerts.length;
-            document.getElementById('alert-text').innerHTML = `<strong>[Alert]</strong> ${escapeHTML(alerts[alertIdx])}`;
-        }
-        function dismissAlert() {
-            document.getElementById('alert-banner').style.display = 'none';
+
+            document.getElementById('alert-text').textContent = alerts[alertIdx];
+
         }
 
-        // Modal Controls & Escape Key Listener
+
+
+        function dismissAlert() {
+
+            document.getElementById('alert-banner').classList.add('hidden');
+
+        }
+
+
+
         function openTelemetryModal() {
+
             document.getElementById('telemetry-modal').classList.remove('hidden');
+
         }
+
+
+
         function closeTelemetryModal() {
+
             document.getElementById('telemetry-modal').classList.add('hidden');
+
         }
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeTelemetryModal();
+
+
+
+        // Timeline toggle
+
+        function toggleTimelineDetails(id) {
+
+            const el = document.getElementById(id);
+
+            if (el) el.classList.toggle('hidden');
+
+        }
+
+
+
+        // Scroll listener for controls
+
+        window.addEventListener('scroll', () => {
+
+            const controls = document.getElementById('scroll-controls');
+
+            if (window.scrollY > 200) {
+
+                controls.classList.remove('opacity-0', 'pointer-events-none');
+
+            } else {
+
+                controls.classList.add('opacity-0', 'pointer-events-none');
+
+            }
+
         });
 
-        // Crisis Simulator State Engine
-        let simState = { stage: 1, morale: 80, legal: 50, containment: 30 };
-        const simStages = {
-            1: {
-                title: "Zero-Day Ransomware Outbreak",
-                desc: "EDR telemetry confirms active encryption across 40% of host endpoints. Threat actors are demanding 50 BTC. Your tier-2 SOC team has been awake for 14 hours straight. What is your immediate tactical directive?",
-                choices: [
-                    { text: "Isolate affected VLANs immediately & activate pre-signed MSA retainer", morale: +10, legal: +30, containment: +40, next: 2 },
-                    { text: "Pay the 50 BTC ransom immediately to restore operations without downtime", morale: -20, legal: -10, containment: +10, result: { success: false, title: "Extortion Failure", desc: "Paying without vetting leads to secondary double-extortion and legal compliance penalties." } },
-                    { text: "Keep tired Tier-1 team working through the night without shift handover", morale: -40, legal: 0, containment: +10, result: { success: false, title: "Fatigue Collapse", desc: "Exhausted analysts misconfigure firewall rules, allowing lateral threat movement across networks." } }
+
+
+        function scrollToTop() {
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        }
+
+
+
+        function scrollToBottom() {
+
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+
+        }
+
+
+
+        // Simulator Logic: five selectable, three-stage crisis simulations.
+        const simulatorScenarios = {
+            ransomware: {
+                initial: { morale: 80, legal: 50, containment: 30 },
+                stages: [
+                    { stage: "Phase 1 of 3", timer: "Timestamp: T+00:15 (03:42 AM PST)", title: "Ransomware Outbreak: Initial Containment", desc: "Ransomware is spreading across VLAN 104. A fatigued analyst recommends shutting down every domain controller immediately.", choices: [
+                        { text: "Shut down all domain controllers without scoping the incident", morale: -15, legal: -5, containment: 10 },
+                        { text: "Isolate affected hosts and VLAN 104; preserve critical evidence", morale: 5, legal: 10, containment: 30 }
+                    ]},
+                    { stage: "Phase 2 of 3", timer: "Timestamp: T+00:45 (04:12 AM PST)", title: "Ransomware: Specialist Support", desc: "Several systems are encrypted. The team needs incident-response support and a clear record of actions taken.", choices: [
+                        { text: "Activate the pre-approved DFIR retainer and document actions", morale: 10, legal: 25, containment: 20 },
+                        { text: "Search for a new vendor and delay formal incident documentation", morale: -10, legal: -20, containment: -5 }
+                    ]},
+                    { stage: "Phase 3 of 3", timer: "Timestamp: T+02:00 (05:27 AM PST)", title: "Ransomware: Recovery Decision", desc: "Containment is improving. Select the recovery approach that reduces the chance of reinfection.", choices: [
+                        { text: "Validate clean backups, eradicate persistence, and restore in stages", morale: 10, legal: 10, containment: 25 },
+                        { text: "Restore everything immediately without validating backups or systems", morale: -10, legal: -5, containment: -10 }
+                    ]}
                 ]
             },
-            2: {
-                title: "External DFIR Onboarding & Legal Coordination",
-                desc: "External incident response specialists have arrived via pre-negotiated MSAs. Legal counsel recommends preserving forensic evidence before shutting down infected servers.",
-                choices: [
-                    { text: "Enforce mandatory 8-hour shift rotations and conduct joint forensic scoping", morale: +20, legal: +20, containment: +30, next: 3 },
-                    { text: "Bypass shift handover and let analysts work continuously until containment", morale: -30, legal: +10, containment: +20, result: { success: false, title: "Burnout Incident", desc: "Key incident lead suffers cognitive burnout, missing critical lateral movement artifacts." } }
+            exfiltration: {
+                initial: { morale: 75, legal: 45, containment: 25 },
+                stages: [
+                    { stage: "Phase 1 of 3", timer: "Timestamp: T+00:10", title: "Data Exfiltration: Confirm the Signal", desc: "DLP alerts show a large outbound transfer from a server containing employee records. The scope is not yet confirmed.", choices: [
+                        { text: "Preserve logs and network evidence; investigate the source and scope", morale: 5, legal: 10, containment: 25 },
+                        { text: "Delete the alert and logs to avoid disrupting business", morale: -10, legal: -20, containment: -10 }
+                    ]},
+                    { stage: "Phase 2 of 3", timer: "Timestamp: T+00:40", title: "Data Exfiltration: Privacy Coordination", desc: "Initial evidence suggests personal information may have been accessed. Legal and privacy teams need reliable facts.", choices: [
+                        { text: "Engage privacy/legal leads and document confirmed facts and uncertainties", morale: 5, legal: 30, containment: 10 },
+                        { text: "Send a public statement before verifying the incident details", morale: -5, legal: -15, containment: 0 }
+                    ]},
+                    { stage: "Phase 3 of 3", timer: "Timestamp: T+01:30", title: "Data Exfiltration: Reduce Further Exposure", desc: "The suspected transfer path is identified. Decide how to prevent further loss while maintaining evidence.", choices: [
+                        { text: "Restrict the compromised account and egress path; monitor for repeat transfers", morale: 5, legal: 10, containment: 25 },
+                        { text: "Leave access unchanged until the full investigation is complete", morale: -5, legal: -5, containment: -15 }
+                    ]}
                 ]
             },
-            3: {
-                title: "Blame-Free Post-Mortem & Containment Finalization",
-                desc: "Active ransomware payload neutralized. Executive board demands disciplinary termination of the employee who opened the initial phishing vector.",
-                choices: [
-                    { text: "Push back with a blame-free therapeutic post-mortem focused on system hardening", morale: +30, legal: +25, containment: +30, result: { success: true, title: "Complete Resilience Success", desc: "Exemplary crisis management! Psychological safety preserved, legal retainers honored, and infrastructure fully hardened." } },
-                    { text: "Publicly scapegoat and fire the employee to satisfy executive optics", morale: -50, legal: -20, containment: +10, result: { success: false, title: "Cultural Failure", desc: "Employee fear destroys future incident reporting channels, crippling organizational security posture." } }
+            vendor: {
+                initial: { morale: 80, legal: 40, containment: 30 },
+                stages: [
+                    { stage: "Phase 1 of 3", timer: "Timestamp: T+00:20", title: "Vendor Compromise: Limit Trust", desc: "A managed service provider reports suspicious activity on an account that can access your environment.", choices: [
+                        { text: "Disable or restrict the affected vendor access and review active sessions", morale: 5, legal: 10, containment: 25 },
+                        { text: "Keep the vendor account enabled to avoid delaying service", morale: -5, legal: -5, containment: -15 }
+                    ]},
+                    { stage: "Phase 2 of 3", timer: "Timestamp: T+01:00", title: "Vendor Compromise: Contract and Evidence", desc: "The vendor is investigating. Your team must coordinate securely and understand contractual notification and evidence obligations.", choices: [
+                        { text: "Use the approved incident contact, review contract terms, and exchange evidence securely", morale: 5, legal: 25, containment: 15 },
+                        { text: "Share sensitive logs through an unapproved channel and skip contract review", morale: -5, legal: -20, containment: -5 }
+                    ]},
+                    { stage: "Phase 3 of 3", timer: "Timestamp: T+03:00", title: "Vendor Compromise: Restore Access Safely", desc: "The vendor claims the issue is fixed and requests that all access be restored.", choices: [
+                        { text: "Require validation, rotate credentials, and restore least-privilege access gradually", morale: 10, legal: 10, containment: 25 },
+                        { text: "Restore all previous permissions based only on the vendor's assurance", morale: -5, legal: -5, containment: -15 }
+                    ]}
+                ]
+            },
+            recovery: {
+                initial: { morale: 70, legal: 50, containment: 55 },
+                stages: [
+                    { stage: "Phase 1 of 3", timer: "Timestamp: T+00:30", title: "Recovery: Validate the Environment", desc: "The immediate threat appears contained. Some business services are still offline and executives want them restored quickly.", choices: [
+                        { text: "Verify eradication, system integrity, and clean backups before staged restoration", morale: 5, legal: 10, containment: 20 },
+                        { text: "Reconnect all affected systems immediately to meet the deadline", morale: -5, legal: -5, containment: -20 }
+                    ]},
+                    { stage: "Phase 2 of 3", timer: "Timestamp: T+02:00", title: "Recovery: Communicate Clearly", desc: "Staff and customers are asking what happened. Confirmed facts are available, but some details remain under investigation.", choices: [
+                        { text: "Provide an approved, factual update and a clear next-update time", morale: 10, legal: 15, containment: 5 },
+                        { text: "Speculate about the attacker and promise a recovery time you cannot verify", morale: -10, legal: -15, containment: 0 }
+                    ]},
+                    { stage: "Phase 3 of 3", timer: "Timestamp: T+24:00", title: "Recovery: Learn from the Incident", desc: "Core services are stable. The team needs to turn lessons learned into measurable improvements.", choices: [
+                        { text: "Run a blameless post-mortem with owners, deadlines, and tracked corrective actions", morale: 15, legal: 10, containment: 10 },
+                        { text: "Close the incident without reviewing root cause or assigning follow-up actions", morale: -10, legal: -10, containment: -5 }
+                    ]}
+                ]
+            },
+            insider: {
+                initial: { morale: 75, legal: 45, containment: 35 },
+                stages: [
+                    { stage: "Phase 1 of 3", timer: "Timestamp: T+00:15", title: "Insider Threat: Protect Accounts", desc: "A user account shows unusual downloads and sign-ins from an unfamiliar location. The cause is not yet known.", choices: [
+                        { text: "Preserve audit logs and apply proportionate temporary access restrictions", morale: 5, legal: 10, containment: 25 },
+                        { text: "Publicly accuse the employee and wipe their device immediately", morale: -15, legal: -15, containment: 5 }
+                    ]},
+                    { stage: "Phase 2 of 3", timer: "Timestamp: T+00:50", title: "Insider Threat: Investigate Fairly", desc: "The activity could indicate a compromised account or policy violation. HR and legal guidance may be needed.", choices: [
+                        { text: "Use authorized evidence collection and coordinate with HR/legal on a need-to-know basis", morale: 5, legal: 25, containment: 10 },
+                        { text: "Search personal information outside the approved scope and share rumors broadly", morale: -10, legal: -20, containment: 0 }
+                    ]},
+                    { stage: "Phase 3 of 3", timer: "Timestamp: T+02:00", title: "Insider Threat: Secure and Monitor", desc: "The suspicious account is contained. Choose a measured plan to prevent recurrence.", choices: [
+                        { text: "Rotate credentials, enforce MFA, review least privilege, and monitor for recurrence", morale: 10, legal: 10, containment: 25 },
+                        { text: "Re-enable the account with the same credentials and no additional monitoring", morale: -5, legal: -5, containment: -15 }
+                    ]}
                 ]
             }
         };
 
-        function renderSimulator() {
-            const stageData = simStages[simState.stage];
-            if (!stageData) return;
+        let activeSimulator = 'ransomware';
+        let simStages = simulatorScenarios[activeSimulator].stages;
+        let currentSimStage = 0;
+        let morale = 80, legal = 50, containment = 30;
 
-            document.getElementById('sim-stage').innerText = `Phase ${simState.stage} of 3`;
-            document.getElementById('sim-title').innerText = stageData.title;
-            document.getElementById('sim-desc').innerText = stageData.desc;
-
-            document.getElementById('metric-morale').innerText = `${simState.morale}%`;
-            document.getElementById('bar-morale').style.width = `${simState.morale}%`;
-            document.getElementById('metric-legal').innerText = `${simState.legal}%`;
-            document.getElementById('bar-legal').style.width = `${simState.legal}%`;
-            document.getElementById('metric-containment').innerText = `${simState.containment}%`;
-            document.getElementById('bar-containment').style.width = `${simState.containment}%`;
-
-            const choicesDiv = document.getElementById('sim-choices');
-            choicesDiv.innerHTML = '';
-            stageData.choices.forEach((choice) => {
-                const btn = document.createElement('button');
-                btn.className = "w-full text-left p-4 bg-slate-950 hover:bg-slate-800/80 border border-slate-800 hover:border-cyan-500/50 rounded-xl transition text-sm text-slate-200 flex items-center justify-between group";
-                btn.innerHTML = `<span>${escapeHTML(choice.text)}</span> <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500 group-hover:text-cyan-400 shrink-0 ml-2"></i>`;
-                btn.onclick = () => handleChoice(choice);
-                choicesDiv.appendChild(btn);
-            });
-            lucide.createIcons();
+        function loadSimulator(simulatorId) {
+            if (!simulatorScenarios[simulatorId]) return;
+            activeSimulator = simulatorId;
+            simStages = simulatorScenarios[activeSimulator].stages;
+            resetSimulator();
         }
 
-        function handleChoice(choice) {
-            simState.morale = Math.max(0, Math.min(100, simState.morale + choice.morale));
-            simState.legal = Math.max(0, Math.min(100, simState.legal + choice.legal));
-            simState.containment = Math.max(0, Math.min(100, simState.containment + choice.containment));
-
-            if (choice.result) {
-                document.getElementById('sim-active-card').classList.add('hidden');
-                const resCard = document.getElementById('sim-result');
-                resCard.classList.remove('hidden');
-                document.getElementById('result-title').innerText = choice.result.title;
-                document.getElementById('result-desc').innerText = choice.result.desc;
-                const iconDiv = document.getElementById('result-icon');
-                if (choice.result.success) {
-                    iconDiv.className = "w-20 h-20 mx-auto rounded-full flex items-center justify-center bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-3xl font-bold";
-                    iconDiv.innerText = "✓";
-                } else {
-                    iconDiv.className = "w-20 h-20 mx-auto rounded-full flex items-center justify-center bg-rose-500/20 text-rose-400 border border-rose-500/40 text-3xl font-bold";
-                    iconDiv.innerText = "✕";
-                }
-            } else if (choice.next) {
-                simState.stage = choice.next;
-                renderSimulator();
+        function renderSim() {
+            if (currentSimStage < simStages.length) {
+                const stage = simStages[currentSimStage];
+                document.getElementById('sim-stage').innerText = stage.stage;
+                document.getElementById('sim-timer').innerText = stage.timer;
+                document.getElementById('sim-title').innerText = stage.title;
+                document.getElementById('sim-desc').innerText = stage.desc;
+                const choicesContainer = document.getElementById('sim-choices');
+                choicesContainer.innerHTML = stage.choices.map((choice, idx) => `
+                    <button type="button" onclick="makeSimChoice(${idx})" class="w-full text-left p-4 bg-slate-950 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500/50 rounded-xl transition text-xs text-slate-200 flex items-center justify-between group">
+                        <span>${choice.text}</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 text-cyan-400 opacity-0 group-hover:opacity-100 transition"></i>
+                    </button>
+                `).join('');
+                if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
+            } else {
+                showSimResult();
             }
+        }
+
+        function makeSimChoice(choiceIdx) {
+            const choice = simStages[currentSimStage].choices[choiceIdx];
+            if (!choice) return;
+            morale = Math.min(100, Math.max(0, morale + choice.morale));
+            legal = Math.min(100, Math.max(0, legal + choice.legal));
+            containment = Math.min(100, Math.max(0, containment + choice.containment));
+            updateMetrics();
+            currentSimStage++;
+            renderSim();
+        }
+
+        function updateMetrics() {
+            document.getElementById('metric-morale').innerText = `${morale}%`;
+            document.getElementById('bar-morale').style.width = `${morale}%`;
+            document.getElementById('metric-legal').innerText = `${legal}%`;
+            document.getElementById('bar-legal').style.width = `${legal}%`;
+            document.getElementById('metric-containment').innerText = `${containment}%`;
+            document.getElementById('bar-containment').style.width = `${containment}%`;
+        }
+
+        function showSimResult() {
+            document.getElementById('sim-active-card').classList.add('hidden');
+            const result = document.getElementById('sim-result');
+            result.classList.remove('hidden');
+            const iconBox = document.getElementById('result-icon');
+            const title = document.getElementById('result-title');
+            const desc = document.getElementById('result-desc');
+            const scenarioName = document.getElementById('simulator-selector').selectedOptions[0].textContent.replace(/^\d+\.\s*/, '');
+
+            if (morale >= 60 && legal >= 60 && containment >= 60) {
+                iconBox.className = "w-20 h-20 mx-auto rounded-full flex items-center justify-center bg-emerald-500/20 text-emerald-400 border border-emerald-500/40";
+                iconBox.innerHTML = `<i data-lucide="check-circle-2" class="w-10 h-10"></i>`;
+                title.innerText = "Crisis Objectives Achieved";
+                desc.innerText = `${scenarioName}: Your decisions supported effective containment, legal readiness, and team resilience. Review the decision-making process and record any follow-up actions.`;
+            } else {
+                iconBox.className = "w-20 h-20 mx-auto rounded-full flex items-center justify-center bg-amber-500/20 text-amber-400 border border-amber-500/40";
+                iconBox.innerHTML = `<i data-lucide="alert-octagon" class="w-10 h-10"></i>`;
+                title.innerText = "Operational Gaps Identified";
+                desc.innerText = `${scenarioName}: The response has gaps in containment, legal readiness, or team resilience. Restart the scenario and try choices that preserve evidence, coordinate stakeholders, and reduce ongoing risk.`;
+            }
+            if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
         }
 
         function resetSimulator() {
-            simState = { stage: 1, morale: 80, legal: 50, containment: 30 };
+            currentSimStage = 0;
+            const initial = simulatorScenarios[activeSimulator].initial;
+            morale = initial.morale;
+            legal = initial.legal;
+            containment = initial.containment;
+            simStages = simulatorScenarios[activeSimulator].stages;
+            updateMetrics();
             document.getElementById('sim-result').classList.add('hidden');
             document.getElementById('sim-active-card').classList.remove('hidden');
-            renderSimulator();
+            renderSim();
         }
-        renderSimulator();
 
-        // SOC Chat Command Handler
+        // SOC Chat Script
+
         function handleChatSubmit(e) {
-            e.preventDefault();
-            const input = document.getElementById('chat-input');
-            const text = input.value.trim();
-            if (!text) return;
 
-            appendChatMessage("Commander", text, "cyan");
+            e.preventDefault();
+
+            const input = document.getElementById('chat-input');
+
+            const msg = input.value.trim();
+
+            if (!msg) return;
+
+
+
+            appendChatMessage('Commander', msg, 'cyan');
+
             input.value = '';
 
+
+
             setTimeout(() => {
-                let response = "Acknowledged commander. Executing directive across active nodes.";
-                const lower = text.toLowerCase();
-                if (lower.includes("subnet")) response = "Subnet isolation protocols initiated. Segment firewall rules updated.";
-                else if (lower.includes("msa")) response = "External DFIR vendor notified via pre-signed MSA retainer. Onboarding in progress.";
-                else if (lower.includes("rotate")) response = "Shift crew handover complete. Rested secondary analysts are online.";
-                appendChatMessage("DFIR Lead", response, "slate");
-            }, 750);
+
+                appendChatMessage('DFIR Lead', `Acknowledged directive: "${msg}". This is a simulated acknowledgement. Follow the approved incident-response plan for real incidents.`, 'slate');
+
+            }, 1000);
+
         }
+
+
 
         function sendQuickCommand(cmd) {
+
             document.getElementById('chat-input').value = cmd;
+
         }
 
-        function appendChatMessage(sender, text, tone) {
+
+
+        function appendChatMessage(sender, messageText, theme) {
             const feed = document.getElementById('chat-feed');
-            const div = document.createElement('div');
-            div.className = "flex items-start space-x-3";
-            const isCommander = tone === "cyan";
-            div.innerHTML = `
-                <div class="${isCommander ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30' : 'bg-slate-800 text-slate-300 border-slate-700'} p-2 rounded-xl font-mono font-bold text-xs shrink-0 border">${isCommander ? 'CMD' : 'SOC'}</div>
-                <div class="bg-slate-800/80 border border-slate-700/50 p-3.5 rounded-2xl text-sm text-slate-200 max-w-xl">
-                    <strong class="text-xs block text-slate-400 mb-0.5">${escapeHTML(sender)}</strong>
-                    ${escapeHTML(text)}
-                </div>
-            `;
-            feed.appendChild(div);
+            const isCommander = sender === 'Commander';
+            const wrapper = document.createElement('div');
+            wrapper.className = 'flex items-start space-x-3' + (isCommander ? ' flex-row-reverse space-x-reverse' : '');
+
+            const avatar = document.createElement('div');
+            avatar.className = 'bg-slate-800 text-slate-300 p-2 rounded-xl font-mono font-bold text-xs shrink-0 border border-slate-700';
+            avatar.textContent = String(sender).slice(0, 3).toUpperCase();
+
+            const bubble = document.createElement('div');
+            bubble.className = (isCommander ? 'bg-cyan-950/60 border-cyan-800/50' : 'bg-slate-800/80 border-slate-700/50') + ' border p-3.5 rounded-2xl text-sm text-slate-200 max-w-xl';
+            const senderLabel = document.createElement('strong');
+            senderLabel.className = 'text-xs block text-slate-400 mb-0.5';
+            senderLabel.textContent = String(sender);
+            const body = document.createElement('span');
+            body.className = 'whitespace-pre-wrap break-words';
+            body.textContent = String(messageText);
+            bubble.append(senderLabel, body);
+            wrapper.append(avatar, bubble);
+            feed.appendChild(wrapper);
+
+            // Bound the live DOM to prevent unbounded growth in long training sessions.
+            while (feed.children.length > 100) feed.firstElementChild.remove();
             feed.scrollTop = feed.scrollHeight;
         }
 
+
         function clearChat() {
-            document.getElementById('chat-feed').innerHTML = '';
+            const feed = document.getElementById('chat-feed');
+            feed.replaceChildren();
+            appendChatMessage('DFIR Lead', 'Feed cleared. Submit a directive or use a quick directive to continue the training scenario.', 'slate');
         }
 
-        // Timeline Accordion Toggle
-        function toggleTimelineDetails(id) {
-            const el = document.getElementById(id);
-            if (el) el.classList.toggle('hidden');
-        }
 
-        // Incident Submissions Queue
-        let tickets = [
-            { id: 1, author: "Alex Vance", asset: "DC-SRV-02", severity: "Critical", notes: "Shadow copies deleted via encrypted PowerShell payload." },
-            { id: 2, author: "Sarah Connor", asset: "VLAN 104 Gateway", severity: "High", notes: "Unusual outbound beaconing detected on port 443." }
-        ];
 
-        function renderTickets(filter = 'All') {
-            const container = document.getElementById('tickets-container');
-            container.innerHTML = '';
-            const filtered = filter === 'All' ? tickets : tickets.filter(t => t.severity === filter);
-            
-            if (filtered.length === 0) {
-                container.innerHTML = `<p class="text-xs text-slate-500 text-center py-4 font-mono">No matching tickets in queue.</p>`;
-                return;
-            }
-
-            filtered.forEach(t => {
-                const card = document.createElement('div');
-                card.className = "p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-2 text-xs";
-                const sevColor = t.severity === 'Critical' ? 'bg-rose-500/20 text-rose-400 border-rose-500/30' : 'bg-amber-500/20 text-amber-400 border-amber-500/30';
-                card.innerHTML = `
-                    <div class="flex items-center justify-between">
-                        <span class="font-bold text-white">${escapeHTML(t.asset)}</span>
-                        <span class="px-2 py-0.5 rounded border text-[10px] font-mono ${sevColor}">${escapeHTML(t.severity)}</span>
-                    </div>
-                    <p class="text-slate-300">${escapeHTML(t.notes)}</p>
-                    <div class="text-[10px] text-slate-500 font-mono flex justify-between pt-1 border-t border-slate-900">
-                        <span>Reporter: ${escapeHTML(t.author)}</span>
-                        <span>Ticket #${t.id}</span>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
+        // Tickets handling
 
         function handleTicketSubmit(e) {
+
             e.preventDefault();
+
             const author = document.getElementById('ticket-author').value.trim();
             const asset = document.getElementById('ticket-asset').value.trim();
             const severity = document.getElementById('ticket-severity').value;
-            const notes = document.getElementById('ticket-notes').value.trim();
-
-            tickets.unshift({ id: tickets.length + 1, author, asset, severity, notes });
-            document.getElementById('ticket-form').reset();
-            renderTickets('All');
-        }
-
-        function filterTickets(level) {
-            ['All', 'Critical', 'High'].forEach(l => {
-                const btn = document.getElementById(`filter-${l.toLowerCase()}`);
-                if (btn) {
-                    btn.className = l === level ? "px-2.5 py-1 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 transition" : "px-2.5 py-1 rounded bg-slate-800 text-slate-400 hover:text-white transition";
-                }
-            });
-            renderTickets(level);
-        }
-        renderTickets('All');
-
-        // Assessment Quiz State
-        const quizData = [
-            {
-                q: "Why are pre-signed Master Services Agreements (MSAs) critical during a ransomware crisis?",
-                options: [
-                    ["They eliminate legal delays and guarantee rapid vendor onboarding.", true],
-                    ["They guarantee the threat actors will decrypt files for free.", false],
-                    ["They replace the need for internal firewalls.", false]
-                ]
-            },
-            {
-                q: "What is the primary risk of forcing SOC analysts to work 18+ hour continuous shifts?",
-                options: [
-                    ["Cognitive fatigue, tunnel vision, and catastrophic configuration mistakes.", true],
-                    ["Higher coffee consumption expenses.", false],
-                    ["Improved threat actor attribution speed.", false]
-                ]
-            },
-            {
-                q: "What is the goal of a blame-free post-mortem after an incident?",
-                options: [
-                    ["To treat breaches as system learning opportunities rather than employee disciplinary actions.", true],
-                    ["To ensure no one ever reports security anomalies again.", false],
-                    ["To legally protect executive leadership from liability.", false]
-                ]
-            }
-        ];
-        let currentQuizIdx = 0;
-        let quizScore = 0;
-
-        function renderQuiz() {
-            if (currentQuizIdx >= quizData.length) {
-                document.getElementById('quiz-card').classList.add('hidden');
-                document.getElementById('quiz-result-card').classList.remove('hidden');
-                document.getElementById('quiz-score-text').innerText = `You scored ${quizScore} out of ${quizData.length} correct answers!`;
+            const desc = document.getElementById('ticket-desc').value.trim();
+            const form = document.getElementById('ticket-form');
+            const allowedSeverities = new Set(['Critical', 'High', 'Medium']);
+            const assetPattern = /^[A-Za-z0-9._:/ -]{1,50}$/;
+            if (!form.reportValidity() || !author || author.length > 50 || !assetPattern.test(asset) || !allowedSeverities.has(severity) || !desc || desc.length > 1000) {
+                alert('Check the ticket fields. Name and description are required; asset must use letters, numbers, dots, colons, slashes, spaces, underscores, or hyphens.');
                 return;
             }
-            const qObj = quizData[currentQuizIdx];
-            document.getElementById('quiz-progress').innerText = `Question ${currentQuizIdx + 1} of ${quizData.length}`;
-            document.getElementById('quiz-question').innerText = qObj.q;
-            
-            const optsDiv = document.getElementById('quiz-options');
-            optsDiv.innerHTML = '';
-            qObj.options.forEach(([text, isCorrect]) => {
-                const btn = document.createElement('button');
-                btn.className = "w-full text-left p-3.5 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl transition text-xs text-slate-200";
-                btn.innerText = text;
-                btn.onclick = () => {
-                    if (isCorrect) quizScore++;
-                    currentQuizIdx++;
-                    renderQuiz();
-                };
-                optsDiv.appendChild(btn);
-            });
+            const list = document.getElementById('ticket-list');
+            const badgeClass = severity === 'Critical' ? 'bg-rose-500/20 text-rose-400 border-rose-500/30' : severity === 'High' ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' : 'bg-sky-500/20 text-sky-400 border-sky-500/30';
+
+            const card = document.createElement('div');
+            card.className = 'bg-slate-950 border border-slate-800 p-4 rounded-2xl flex flex-col sm:flex-row justify-between gap-2 animate-fadeIn';
+            const details = document.createElement('div');
+            const heading = document.createElement('div');
+            heading.className = 'flex items-center space-x-2';
+            const badge = document.createElement('span');
+            badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold ' + badgeClass + ' border uppercase';
+            badge.textContent = severity;
+            const title = document.createElement('h4');
+            title.className = 'text-sm font-bold text-white';
+            title.textContent = desc.slice(0, 40) + (desc.length > 40 ? '…' : '');
+            heading.append(badge, title);
+            const metadata = document.createElement('p');
+            metadata.className = 'text-xs text-slate-400 mt-1';
+            metadata.textContent = `Reporter: ${author} • Asset: ${asset}`;
+            details.append(heading, metadata);
+            const time = document.createElement('span');
+            time.className = 'text-[11px] font-mono text-slate-500 shrink-0';
+            time.textContent = 'Just now · Local demo only';
+            card.append(details, time);
+            list.prepend(card);
+            while (list.children.length > 50) list.lastElementChild.remove();
+            document.getElementById('ticket-form').reset();
+
         }
 
-        function resetQuiz() {
-            currentQuizIdx = 0;
-            quizScore = 0;
-            document.getElementById('quiz-result-card').classList.add('hidden');
-            document.getElementById('quiz-card').classList.remove('hidden');
-            renderQuiz();
+
+
+                // Quiz Handling: three independent quizzes with automatic scoring and feedback.
+        const quizSets = {
+            human: {
+                title: "Human Factors & Shift Management",
+                questions: [
+                    {q:"What is the primary operational risk of requiring SOC analysts to work continuous 18-hour shifts during a critical breach?",a:["Higher bandwidth usage on internal messaging software","Severe cognitive fatigue leading to critical misconfigurations and missed alerts","Slight delays in filing expense reports"],correct:1,why:"Extended shifts increase fatigue and the likelihood of mistakes or missed alerts."},
+                    {q:"Why are rotational shifts useful during a prolonged incident?",a:["They eliminate the need for incident documentation","They reduce handovers to zero","They help maintain alertness and decision quality"],correct:2,why:"Planned rotations help responders stay effective and reduce fatigue-related errors."},
+                    {q:"What does psychological safety help team members do?",a:["Report mistakes and concerns without fear of humiliation","Avoid recording incidents","Ignore escalation procedures"],correct:0,why:"People are more likely to share important information when they can speak up safely."},
+                    {q:"When handing over an incident between shifts, what should the outgoing analyst provide?",a:["Only their personal opinion","A concise record of status, evidence, decisions, and next actions","A verbal update with no written record"],correct:1,why:"Structured handovers preserve context and reduce missed actions."},
+                    {q:"Which action best supports a tired responder?",a:["Require uninterrupted overtime","Discourage asking for help","Arrange a break or shift rotation and assign a second reviewer"],correct:2,why:"Rest and peer review reduce fatigue-related risks during high-pressure work."}
+                ]
+            },
+            legal: {
+                title: "Legal Readiness & Vendor Retainers",
+                questions: [
+                    {q:"Why should an organization arrange an incident-response retainer before a breach?",a:["To avoid documenting the incident","To speed up access to specialist help under pre-agreed terms","To guarantee that incidents never happen"],correct:1,why:"Pre-agreed terms reduce delays caused by negotiating during an active incident."},
+                    {q:"What is the purpose of a Master Services Agreement (MSA)?",a:["To define general service terms and responsibilities","To replace all incident logs","To prove that a vendor is never at fault"],correct:0,why:"An MSA sets the broader commercial and service terms for work between parties."},
+                    {q:"What should the response team do when a vendor may be compromised?",a:["Assume the vendor is safe","Delete all vendor communications","Assess exposure, preserve evidence, and coordinate through approved contacts"],correct:2,why:"A measured response helps establish scope while protecting evidence and communications."},
+                    {q:"Why are confidentiality and data-handling terms important in a DFIR contract?",a:["They remove the need for access controls","They clarify how sensitive information must be protected and handled","They authorize unrestricted data sharing"],correct:1,why:"Clear terms support appropriate protection, disclosure, and handling of sensitive information."},
+                    {q:"Who should guide decisions about legal obligations and possible breach notification?",a:["Authorized legal/privacy counsel working with incident leadership","Any employee acting alone","The vendor's marketing team"],correct:0,why:"Legal and privacy specialists help determine applicable obligations and notification requirements."}
+                ]
+            },
+            response: {
+                title: "Incident Response & Post-Mortems",
+                questions: [
+                    {q:"What should guide initial containment decisions?",a:["A desire to shut down everything without assessment","Evidence, business impact, and the incident response playbook","The first rumor in chat"],correct:1,why:"Containment should be deliberate and proportionate to the risk."},
+                    {q:"Why preserve logs and forensic evidence?",a:["To support investigation and a reliable timeline","To make the incident look worse","Because logs replace backups"],correct:0,why:"Evidence helps determine scope, actions, and root causes."},
+                    {q:"What is the purpose of a blameless post-mortem?",a:["Assigning personal punishment first","Identifying system gaps and trackable improvements","Closing the incident without review"],correct:1,why:"A blameless review focuses on learning and preventing recurrence."},
+                    {q:"Before restoring systems from backups, what should the team do?",a:["Assume every backup is clean","Delete the incident timeline","Validate backup integrity and ensure systems are safe to restore"],correct:2,why:"Validation helps avoid restoring corrupted or compromised systems."},
+                    {q:"Which item belongs in an incident timeline?",a:["Unverified speculation only","Time-stamped events, decisions, and evidence references","Personal opinions without timestamps"],correct:1,why:"A timeline should be factual, time-stamped, and traceable."}
+                ]
+            }
+        };
+
+        function renderQuiz() {
+            const key = document.getElementById('quiz-selector').value;
+            const quiz = quizSets[key];
+            if (!quiz) return;
+            const container = document.getElementById('quiz-container');
+            const results = document.getElementById('quiz-results');
+            results.classList.add('hidden');
+            results.innerHTML = '';
+            document.getElementById('quiz-retry').classList.add('hidden');
+            container.innerHTML = `<p class="text-sm text-slate-300">${quiz.title} • ${quiz.questions.length} questions</p>` +
+                quiz.questions.map((item, i) => `<fieldset class="space-y-3 border-b border-slate-800 pb-5">
+                    <legend class="text-sm font-semibold text-white mb-3">${i + 1}. ${item.q}</legend>
+                    <div class="space-y-2">${item.a.map((answer, j) => `<label class="flex items-start gap-3 p-3 bg-slate-950 border border-slate-800 rounded-xl cursor-pointer hover:border-cyan-500/50">
+                        <input required type="radio" name="question-${i}" value="${j}" class="mt-0.5 accent-cyan-500">
+                        <span class="text-xs text-slate-200">${answer}</span></label>`).join('')}</div>
+                </fieldset>`).join('') +
+                `<button type="submit" class="px-6 py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl">Submit Quiz</button>`;
         }
+
+        function submitQuiz(event) {
+            event.preventDefault();
+            const quiz = quizSets[document.getElementById('quiz-selector').value];
+            if (!quiz) return;
+            const form = document.getElementById('quiz-container');
+            const data = new FormData(form);
+            let score = 0;
+            const feedback = quiz.questions.map((item, i) => {
+                const rawSelected = data.get('question-' + i);
+                const selected = rawSelected === null ? -1 : Number(rawSelected);
+                const correct = Number.isInteger(selected) && selected === item.correct;
+                if (correct) score++;
+                return `<div class="text-left p-3 rounded-xl ${correct ? 'bg-emerald-500/10' : 'bg-rose-500/10'}">
+                    <p class="font-semibold ${correct ? 'text-emerald-300' : 'text-rose-300'}">${i + 1}. ${correct ? 'Correct' : 'Incorrect'} — ${item.q}</p>
+                    <p class="text-xs text-slate-300 mt-1">Correct answer: ${item.a[item.correct]}</p>
+                    <p class="text-xs text-slate-400 mt-1">${item.why}</p></div>`;
+            }).join('');
+            const result = document.getElementById('quiz-results');
+            result.innerHTML = `<h3 class="text-lg font-bold text-white">${quiz.title}: ${score}/${quiz.questions.length} (${Math.round(score / quiz.questions.length * 100)}%)</h3>
+                <p class="text-xs text-slate-300">${score === quiz.questions.length ? 'Excellent work!' : score >= 3 ? 'Good effort. Review the explanations below.' : 'Review the learning material and try again.'}</p>${feedback}`;
+            result.classList.remove('hidden');
+            document.getElementById('quiz-retry').classList.remove('hidden');
+            result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+
+        function exportAuditLog() {
+
+            const csv = "Timestamp,Actor,Action,Status\n03:42:11 PST,SYSTEM_EDR,LockBit Ransomware Alert,UNRESOLVED\n03:45:00 PST,operator@odtn-vancouver.ca,Demo Gate Completed,DEMO ONLY";
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+
+            const url = window.URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+
+            a.href = url;
+            a.download = 'odtn_mod5_audit_log.csv';
+            a.click();
+            window.setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+        }
+
+
+
+        // Initialize interactive modules on first load.
+        renderSim();
         renderQuiz();
+        switchTab('briefing');
+        if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
 
-        // Audit Progress Calculator
-        function updateAuditProgress() {
-            const checkboxes = document.querySelectorAll('#view-audit input[type="checkbox"]');
-            const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
-            document.getElementById('audit-score').innerText = `${checkedCount} / ${checkboxes.length} Completed`;
-        }
+        // Accessible modal dismissal with Escape.
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closePillarModal();
+                closeTelemetryModal();
+            }
+        });
+
     </script>
+
 </body>
+
 </html>
