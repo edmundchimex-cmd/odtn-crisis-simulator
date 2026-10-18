@@ -59,30 +59,6 @@
             *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
         }
 
-        .core-theme-heading {
-            display: inline-block;
-            background: linear-gradient(90deg, #22d3ee 0%, #a78bfa 25%, #f472b6 50%, #fbbf24 75%, #34d399 100%);
-            background-size: 250% auto;
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 0 18px rgba(34, 211, 238, .12);
-            animation: coreThemeColorShift 5s linear infinite, coreThemeBounce 2.8s ease-in-out infinite;
-        }
-        @keyframes coreThemeColorShift {
-            0% { background-position: 0% center; }
-            100% { background-position: 250% center; }
-        }
-        @keyframes coreThemeBounce {
-            0%, 72%, 100% { transform: translateY(0); }
-            80% { transform: translateY(-5px); }
-            88% { transform: translateY(0); }
-            94% { transform: translateY(-2px); }
-        }
-        @media (prefers-reduced-motion: reduce) {
-            .core-theme-heading { animation: none; background-position: center; }
-        }
-
         :root {
             --odtn-navy: #0b1424;
             --odtn-panel: #111f33;
@@ -125,9 +101,10 @@
                         class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 transition shadow-inner">
                 </div>
 
-                <div id="login-error" class="hidden text-xs text-rose-400 font-mono text-center" role="alert"></div>
+                <!-- Error Message Display -->
+                <div id="login-error" class="hidden text-xs text-rose-400 font-mono text-center bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-lg" role="alert"></div>
 
-                <button type="submit" class="w-full py-3.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl transition shadow-lg shadow-cyan-500/25 flex items-center justify-center space-x-2">
+                <button type="submit" id="login-btn" class="w-full py-3.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded-xl transition shadow-lg shadow-cyan-500/25 flex items-center justify-center space-x-2">
                     <span>Sign in securely</span>
                     <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </button>
@@ -161,7 +138,7 @@
     <!-- Supabase Client & Login Handling Script -->
     <script>
         const SUPABASE_URL = 'https://yyuszmuyjuxuazakgasa.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_r74J08I5jV_45g_3KYEHbQ_07x9Yj1x'; 
+        const SUPABASE_ANON_KEY = 'sb_publishable_r74J08I5jV_45g_3KYEHbQ_07x9Yj1x'; // Replace with your exact publishable key if updated in dashboard
         
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -175,22 +152,33 @@
 
         async function handleLogin(event) {
             event.preventDefault();
-            const email = document.getElementById('login-user').value;
+            const email = document.getElementById('login-user').value.trim();
             const password = document.getElementById('login-password').value;
             const errorDiv = document.getElementById('login-error');
+            const submitBtn = document.getElementById('login-btn');
             
             errorDiv.classList.add('hidden');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Authenticating...';
 
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email: email,
-                password: password,
-            });
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password,
+                });
 
-            if (error) {
-                errorDiv.textContent = error.message;
-                errorDiv.classList.remove('hidden');
-            } else {
+                if (error) {
+                    throw error;
+                }
+
                 document.getElementById('login-overlay').classList.add('hidden');
+            } catch (err) {
+                errorDiv.textContent = err.message || 'Sign-in failed. Please check your credentials or create this user in Supabase Auth.';
+                errorDiv.classList.remove('hidden');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>Sign in securely</span><i data-lucide="arrow-right" class="w-4 h-4"></i>';
+                lucide.createIcons();
             }
         }
 
